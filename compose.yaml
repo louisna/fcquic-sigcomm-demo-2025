@@ -1,0 +1,12 @@
+services:
+    amt:
+        image: "louisna/deployment-amt"
+        ports:
+            - "2268:2268"
+        command: 130.104.229.58
+        privileged: true
+    fcquic:
+        image: "louisna/deployment-fcquic"
+        volumes:
+            - ./shared:/shared
+        env_file: ".env"

@@ -1,0 +1,5 @@
+1. At first, there is no "shared/" directory. It will be created when starting the docker.
+2. Start the docker that will connect to our Flexicast QUIC source. Configuration values are provided in the `.env` file.
+3. The "shared/" directory is created with the "data.txt" file containing the RSS updates received through Flexicast QUIC.
+4. Configure `newsboat`, an RSS reader, to point to our data file.
+5. We get the updates when the Flexicast QUIC source sees new RSS data from the lore.kernel.ord/all feed.
