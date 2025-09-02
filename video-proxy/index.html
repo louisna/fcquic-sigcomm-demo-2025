@@ -1,0 +1,12 @@
+<video id="vid" controls autoplay></video>
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+<script>
+  const video = document.getElementById("vid");
+  if (Hls.isSupported()) {
+    const hls = new Hls();
+    hls.loadSource("http://localhost:5554/playlist.m3u8");
+    hls.attachMedia(video);
+  } else {
+    video.src = "http://localhost:5554/playlist.m3u8";
+  }
+</script>

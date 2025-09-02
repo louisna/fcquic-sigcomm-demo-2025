@@ -1,28 +1,40 @@
-# Pull-based RSS feed of the Linux Lore mailing list using Flexicast QUIC
+# Flexicast QUIC Deployment at ACM SIGCOMM 2025 demo
 
-This document describes the procedure for getting updates on the Linux Lore mailing list using Flexicast QUIC (FCQUIC) and Automatic Multicast Tunneling (AMT).
+This repository contains all information related to the demo of Flexicast QUIC during the ACM SIGCOMM 2025 Demo session at Coimbra, Portugal.
 
-Please refer to the abstract for more details on Flexicast QUIC and Automatic Multicast Tunneling.
+During this demo, people can experiment with Flexicast QUIC in two scenarios:
+- File transfer: pushed-based RSS updates of the Linux Kernel Lore mailing list through the Internet using Automatic Multicast Tunneling (AMT, RFC 7450)
+- Video stream: pushed-based HLS of the Big Buck Bunny video through Multicast WiFi (Local Area Network)
 
-We provide a docker-compose file that will automatically start AMT and FCQUIC and connect to our source to get updates through multicast.
+## Receiving-side: how to connect to the source
 
-The only thing to do is start the containers with the following command from this directory:
-```
-# docker compose up
-```
+For people who whish to connect to the Flexicast QUIC source for either use case, [please follow instructions in the recv/ directory](recv/README.md).
 
-Please pay attention that the used source code of AMT requires privileged mode to create inner tuntap links.
+We provide Docker images and environment variables to automate deployment and connection with our source.
 
-## Getting the RSS feed.
+## Hosting your own Flexicast QUIC source
 
-The feed comes from https://lore.kernel.org/all/new.atom. We use this source as we regularly get new emails.
+We provide [an open-source extension of Flexicast QUIC based on Cloudflare quiche](https://github.com/IPNetworkingLab/flexicast-quic), which is based on our paper [Taking the Best of Multicast and Unicast with Flexicast QUIC](https://louisna.github.io/publication/2025-ccr-flexicast).
+However, this implementation is not up to date.
+We will release soon the new implementation to let you play with Flexicast QUIC and host your own implementation!
 
-Starting the containers will initiate a QUIC connection with our source server, and upgrate it to Flexicast if the `FLEXICAST` environment variable is set to `--flexicast`. The containers start with the `.env` file to configure all these variables automatically.
+## Collaboration
 
-Upon reception of RSS feed, the FCQUIC receiver (you) creates the `data.txt` located in `$(pwd)/shared` directory. This `data.txt` file contains the up to date RSS feed, which can be consulted using classic RSS readers such as `newsboat`.
+We intend to pursue larger-scale experiments of Flexicast QUIC on the Internet during the following months.
+If you are interested to collaborate, [please fill out the following form](https://docs.google.com/forms/d/e/1FAIpQLSdGYZBBuPZqZJoADlOamy8Jcxnn3GAst81xBDzIX7IZYfypJA/viewform?usp=header).
+I will use your email to contact you in the future, but will not disclore any personnal information to anyone.
 
-For example, the following configuration file will allow `newsboat` to read the RSS content received through Flexicast QUIC:
+## You want to know more about Flexicast QUIC?
 
-```
-file:///home/louisna/fc-file-transfer/deployment/shared/data.txt
+Do not hesitate to look at the [Flexicast QUIC](https://louisna.github.io/publication/2025-ccr-flexicast)!
+
+## Cite this work
+
+```bibtex
+@article{navarre2025towards,
+  title={Towards an Internet Deployment of Flexible Multicast QUIC},
+  author={Navarre, Louis and Bonaventure, Olivier},
+  journal={" SIGCOMM'25: Proceedings of the SIGCOMM'25 Poster and Demo Sessions"},
+  year={2025}
+}
 ```
