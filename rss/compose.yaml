@@ -7,8 +7,7 @@ services:
         command: 130.104.229.58
         privileged: true
     fcquic:
-        image: "louisna/deployment-fcquic"
+        image: "fcquicrecv"
         volumes:
             - ./shared:/shared
         env_file: ".env"
-        network_mode: "host"

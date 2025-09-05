@@ -1,0 +1,12 @@
+services:
+    fcquic:
+        image: "louisna/deployment-fcquic"
+        volumes:
+            - ./shared:/shared
+        env_file: ".env"
+        network_mode: "host"
+    gstreamer:
+        image: "louisna/deployment-gst"
+        volumes:
+            - ./shared:/shared
+        network_mode: "host"

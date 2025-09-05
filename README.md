@@ -8,7 +8,7 @@ During this demo, people can experiment with Flexicast QUIC in two scenarios:
 
 ## Receiving-side: how to connect to the source
 
-For people who whish to connect to the Flexicast QUIC source for either use case, [please follow instructions in the recv/ directory](recv/README.md).
+For people who whish to connect to the Flexicast QUIC source for either use case, [please follow instructions in the rss/ directory](rss/README.md).
 
 We provide Docker images and environment variables to automate deployment and connection with our source.
 

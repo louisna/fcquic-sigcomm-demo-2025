@@ -1,0 +1,2866 @@
+<?xml version="1.0" encoding="us-ascii"?>
+<feed
+xmlns="http://www.w3.org/2005/Atom"
+xmlns:thr="http://purl.org/syndication/thread/1.0"><title>All of lore.kernel.org</title><link
+rel="alternate"
+type="text/html"
+href="https://lore.kernel.org/all/"/><link
+rel="self"
+href="https://lore.kernel.org/all/new.atom"/><id>mailto:unknown@example.com</id><updated>2025-09-05T09:49:57Z</updated><entry><author><name>Jonathan Cameron</name><email>jonathan.cameron@huawei.com</email></author><title>Re: [PATCH v4 04/10] cpufreq: powernv: Use scope-based cleanup helper</title><updated>2025-09-05T09:49:57Z</updated><link
+href="https://lore.kernel.org/all/20250905104952.00002f58@huawei.com/"/><id>urn:uuid:87aff0bc-9c04-f95a-7dfc-4a434796a82d</id><thr:in-reply-to
+ref="urn:uuid:6e8c3eb0-8d45-7b7c-4df0-cafb4e137d4d"
+href="https://lore.kernel.org/all/20250903131733.57637-5-zhangzihuan@kylinos.cn/"/><content
+type="xhtml"><div
+xmlns="http://www.w3.org/1999/xhtml"><pre
+style="white-space:pre-wrap">On Wed,  3 Sep 2025 21:17:27 +0800
+Zihuan Zhang &lt;zhangzihuan@kylinos.cn&gt; wrote:
+
+<span
+class="q">&gt; Replace the manual cpufreq_cpu_put() with __free(put_cpufreq_policy)
+&gt; annotation for policy references. This reduces the risk of reference
+&gt; counting mistakes and aligns the code with the latest kernel style.
+&gt; 
+&gt; No functional change intended.
+&gt; 
+&gt; Signed-off-by: Zihuan Zhang &lt;zhangzihuan@kylinos.cn&gt;
+</span>This one is a little more weak wrt to justification.  Kernel style
+isn&#39;t to use __free() where there isn&#39;t a significant benefit.
+
+Up to maintainer of the driver on this one so I&#39;ll not offer
+a tag.
+
+<span
+class="q">&gt; ---
+&gt;  drivers/cpufreq/powernv-cpufreq.c | 11 +++++------
+&gt;  1 file changed, 5 insertions(+), 6 deletions(-)
+&gt; 
+&gt; diff --git a/drivers/cpufreq/powernv-cpufreq.c b/drivers/cpufreq/powernv-cpufreq.c
+&gt; index 7d9a5f656de8..811fdbf398fa 100644
+&gt; --- a/drivers/cpufreq/powernv-cpufreq.c
+&gt; +++ b/drivers/cpufreq/powernv-cpufreq.c
+&gt; @@ -892,15 +892,15 @@ static int powernv_cpufreq_reboot_notifier(struct notifier_block *nb,
+&gt;  				unsigned long action, void *unused)
+&gt;  {
+&gt;  	int cpu;
+&gt; -	struct cpufreq_policy *cpu_policy;
+&gt;  
+&gt;  	rebooting = true;
+&gt;  	for_each_online_cpu(cpu) {
+&gt; -		cpu_policy = cpufreq_cpu_get(cpu);
+&gt; +		struct cpufreq_policy *cpu_policy __free(put_cpufreq_policy) =
+&gt; +			cpufreq_cpu_get(cpu);
+&gt; +
+&gt;  		if (!cpu_policy)
+&gt;  			continue;
+&gt;  		powernv_cpufreq_target_index(cpu_policy, get_nominal_index());
+&gt; -		cpufreq_cpu_put(cpu_policy);
+&gt;  	}
+&gt;  
+&gt;  	return NOTIFY_DONE;
+&gt; @@ -913,7 +913,6 @@ static struct notifier_block powernv_cpufreq_reboot_nb = {
+&gt;  static void powernv_cpufreq_work_fn(struct work_struct *work)
+&gt;  {
+&gt;  	struct chip *chip = container_of(work, struct chip, throttle);
+&gt; -	struct cpufreq_policy *policy;
+&gt;  	unsigned int cpu;
+&gt;  	cpumask_t mask;
+&gt;  
+&gt; @@ -928,14 +927,14 @@ static void powernv_cpufreq_work_fn(struct work_struct *work)
+&gt;  	chip-&gt;restore = false;
+&gt;  	for_each_cpu(cpu, &#38;mask) {
+&gt;  		int index;
+&gt; +		struct cpufreq_policy *policy __free(put_cpufreq_policy) =
+&gt; +			cpufreq_cpu_get(cpu);
+&gt;  
+&gt; -		policy = cpufreq_cpu_get(cpu);
+&gt;  		if (!policy)
+&gt;  			continue;
+&gt;  		index = cpufreq_table_find_index_c(policy, policy-&gt;cur, false);
+&gt;  		powernv_cpufreq_target_index(policy, index);
+&gt;  		cpumask_andnot(&#38;mask, &#38;mask, policy-&gt;cpus);
+&gt; -		cpufreq_cpu_put(policy);
+&gt;  	}
+&gt;  out:
+&gt;  	cpus_read_unlock();
+</span>
+</pre></div></content></entry><entry><author><name>ddprobe</name><email>ddprobe@kernel.org</email></author><title>RTT-PROBE: lore-subspace-rtt</title><updated>2025-09-05T09:49:53Z</updated><link
+href="https://lore.kernel.org/all/175706579360.30633.3558711854577462844.rtt-probe@aws-us-west-2-korg-lkml-1.web.codeaurora.org/"/><id>urn:uuid:caf72e0c-4809-53ea-25db-a282249bd469</id><content
+type="xhtml"><div
+xmlns="http://www.w3.org/1999/xhtml"><pre
+style="white-space:pre-wrap">rtt-probe:lore-subspace-rtt:1757065793
+</pre></div></content></entry><entry><author><name>Patchwork</name><email>patchwork@emeril.freedesktop.org</email></author><title
+type="html">&#10003; Xe.CI.Full: success for drm/xe: Fixes around eviction and suspend (rev4)</title><updated>2025-09-05T09:49:50Z</updated><link
+href="https://lore.kernel.org/all/175706578865.306194.9908617351338554930@1538d3639d33/"/><id>urn:uuid:333fa389-c4b8-b021-35a6-d6509da25fc8</id><thr:in-reply-to
+ref="urn:uuid:de9a13fb-85d1-f18b-1a35-43b3076a9b6b"
+href="https://lore.kernel.org/all/20250904160715.2613-1-thomas.hellstrom@linux.intel.com/"/><content
+type="xhtml"><div
+xmlns="http://www.w3.org/1999/xhtml"><pre
+style="white-space:pre-wrap"><a
+href="https://lore.kernel.org/all/175706578865.306194.9908617351338554930@1538d3639d33/1-a.txt">[-- Attachment #1: Type: text/plain, Size: 45003 bytes --]</a>
+
+== Series Details ==
+
+Series: drm/xe: Fixes around eviction and suspend (rev4)
+URL   : <a
+href="https://patchwork.freedesktop.org/series/153712/">https://patchwork.freedesktop.org/series/153712/</a>
+State : success
+
+== Summary ==
+
+CI Bug Log - changes from xe-3679-13f87d5402106b321a373222c64c5a56a05aa3b6_FULL -&gt; xe-pw-153712v4_FULL
+====================================================
+
+Summary
+-------
+
+  **SUCCESS**
+
+  No regressions found.
+
+  
+
+Participating hosts (4 -&gt; 4)
+------------------------------
+
+  No changes in participating hosts
+
+Known issues
+------------
+
+  Here are the changes found in xe-pw-153712v4_FULL that come from known issues:
+
+### IGT changes ###
+
+#### Issues hit ####
+
+  * igt@kms_big_fb@4-tiled-max-hw-stride-32bpp-rotate-0-async-flip:
+    - shard-adlp:         NOTRUN -&gt; [SKIP][1] ([Intel XE#1124])
+   [1]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-adlp-4/igt@kms_big_fb@4-tiled-max-hw-stride-32bpp-rotate-0-async-flip.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-adlp-4/igt@kms_big_fb@4-tiled-max-hw-stride-32bpp-rotate-0-async-flip.html</a>
+
+  * igt@kms_big_fb@x-tiled-64bpp-rotate-0:
+    - shard-adlp:         NOTRUN -&gt; [DMESG-FAIL][2] ([Intel XE#4543])
+   [2]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-adlp-4/igt@kms_big_fb@x-tiled-64bpp-rotate-0.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-adlp-4/igt@kms_big_fb@x-tiled-64bpp-rotate-0.html</a>
+
+  * igt@kms_big_fb@y-tiled-64bpp-rotate-90:
+    - shard-dg2-set2:     NOTRUN -&gt; [SKIP][3] ([Intel XE#1124])
+   [3]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-dg2-435/igt@kms_big_fb@y-tiled-64bpp-rotate-90.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-dg2-435/igt@kms_big_fb@y-tiled-64bpp-rotate-90.html</a>
+
+  * igt@kms_big_fb@y-tiled-addfb-size-overflow:
+    - shard-bmg:          NOTRUN -&gt; [SKIP][4] ([Intel XE#610])
+   [4]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-6/igt@kms_big_fb@y-tiled-addfb-size-overflow.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-6/igt@kms_big_fb@y-tiled-addfb-size-overflow.html</a>
+
+  * igt@kms_big_fb@yf-tiled-64bpp-rotate-90:
+    - shard-bmg:          NOTRUN -&gt; [SKIP][5] ([Intel XE#1124]) +4 other tests skip
+   [5]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-2/igt@kms_big_fb@yf-tiled-64bpp-rotate-90.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-2/igt@kms_big_fb@yf-tiled-64bpp-rotate-90.html</a>
+
+  * igt@kms_big_fb@yf-tiled-addfb-size-offset-overflow:
+    - shard-dg2-set2:     NOTRUN -&gt; [SKIP][6] ([Intel XE#607])
+   [6]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-dg2-435/igt@kms_big_fb@yf-tiled-addfb-size-offset-overflow.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-dg2-435/igt@kms_big_fb@yf-tiled-addfb-size-offset-overflow.html</a>
+
+  * igt@kms_bw@linear-tiling-1-displays-2160x1440p:
+    - shard-bmg:          NOTRUN -&gt; [SKIP][7] ([Intel XE#367])
+   [7]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-2/igt@kms_bw@linear-tiling-1-displays-2160x1440p.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-2/igt@kms_bw@linear-tiling-1-displays-2160x1440p.html</a>
+
+  * igt@kms_bw@linear-tiling-1-displays-2560x1440p:
+    - shard-adlp:         NOTRUN -&gt; [SKIP][8] ([Intel XE#367])
+   [8]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-adlp-4/igt@kms_bw@linear-tiling-1-displays-2560x1440p.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-adlp-4/igt@kms_bw@linear-tiling-1-displays-2560x1440p.html</a>
+
+  * igt@kms_ccs@crc-primary-basic-4-tiled-dg2-rc-ccs:
+    - shard-bmg:          NOTRUN -&gt; [SKIP][9] ([Intel XE#2887]) +4 other tests skip
+   [9]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-2/igt@kms_ccs@crc-primary-basic-4-tiled-dg2-rc-ccs.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-2/igt@kms_ccs@crc-primary-basic-4-tiled-dg2-rc-ccs.html</a>
+
+  * igt@kms_ccs@crc-primary-suspend-4-tiled-bmg-ccs:
+    - shard-bmg:          [PASS][10] -&gt; [INCOMPLETE][11] ([Intel XE#3862]) +1 other test incomplete
+   [10]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-3679-13f87d5402106b321a373222c64c5a56a05aa3b6/shard-bmg-6/igt@kms_ccs@crc-primary-suspend-4-tiled-bmg-ccs.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-3679-13f87d5402106b321a373222c64c5a56a05aa3b6/shard-bmg-6/igt@kms_ccs@crc-primary-suspend-4-tiled-bmg-ccs.html</a>
+   [11]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-3/igt@kms_ccs@crc-primary-suspend-4-tiled-bmg-ccs.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-3/igt@kms_ccs@crc-primary-suspend-4-tiled-bmg-ccs.html</a>
+
+  * igt@kms_ccs@crc-primary-suspend-4-tiled-dg2-rc-ccs@pipe-b-hdmi-a-1:
+    - shard-adlp:         NOTRUN -&gt; [SKIP][12] ([Intel XE#787]) +8 other tests skip
+   [12]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-adlp-4/igt@kms_ccs@crc-primary-suspend-4-tiled-dg2-rc-ccs@pipe-b-hdmi-a-1.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-adlp-4/igt@kms_ccs@crc-primary-suspend-4-tiled-dg2-rc-ccs@pipe-b-hdmi-a-1.html</a>
+
+  * igt@kms_ccs@crc-primary-suspend-4-tiled-dg2-rc-ccs@pipe-d-hdmi-a-1:
+    - shard-adlp:         NOTRUN -&gt; [SKIP][13] ([Intel XE#455] / [Intel XE#787]) +5 other tests skip
+   [13]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-adlp-4/igt@kms_ccs@crc-primary-suspend-4-tiled-dg2-rc-ccs@pipe-d-hdmi-a-1.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-adlp-4/igt@kms_ccs@crc-primary-suspend-4-tiled-dg2-rc-ccs@pipe-d-hdmi-a-1.html</a>
+
+  * igt@kms_ccs@crc-primary-suspend-4-tiled-mtl-rc-ccs-cc@pipe-a-hdmi-a-6:
+    - shard-dg2-set2:     NOTRUN -&gt; [SKIP][14] ([Intel XE#787]) +69 other tests skip
+   [14]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-dg2-435/igt@kms_ccs@crc-primary-suspend-4-tiled-mtl-rc-ccs-cc@pipe-a-hdmi-a-6.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-dg2-435/igt@kms_ccs@crc-primary-suspend-4-tiled-mtl-rc-ccs-cc@pipe-a-hdmi-a-6.html</a>
+
+  * igt@kms_ccs@crc-sprite-planes-basic-4-tiled-lnl-ccs@pipe-d-hdmi-a-3:
+    - shard-bmg:          NOTRUN -&gt; [SKIP][15] ([Intel XE#2652] / [Intel XE#787]) +8 other tests skip
+   [15]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-2/igt@kms_ccs@crc-sprite-planes-basic-4-tiled-lnl-ccs@pipe-d-hdmi-a-3.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-2/igt@kms_ccs@crc-sprite-planes-basic-4-tiled-lnl-ccs@pipe-d-hdmi-a-3.html</a>
+
+  * igt@kms_ccs@crc-sprite-planes-basic-y-tiled-gen12-rc-ccs@pipe-d-dp-4:
+    - shard-dg2-set2:     NOTRUN -&gt; [SKIP][16] ([Intel XE#455] / [Intel XE#787]) +9 other tests skip
+   [16]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-dg2-435/igt@kms_ccs@crc-sprite-planes-basic-y-tiled-gen12-rc-ccs@pipe-d-dp-4.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-dg2-435/igt@kms_ccs@crc-sprite-planes-basic-y-tiled-gen12-rc-ccs@pipe-d-dp-4.html</a>
+
+  * igt@kms_ccs@random-ccs-data-4-tiled-dg2-mc-ccs@pipe-a-hdmi-a-6:
+    - shard-dg2-set2:     [PASS][17] -&gt; [DMESG-WARN][18] ([Intel XE#1727] / [Intel XE#3113])
+   [17]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-3679-13f87d5402106b321a373222c64c5a56a05aa3b6/shard-dg2-436/igt@kms_ccs@random-ccs-data-4-tiled-dg2-mc-ccs@pipe-a-hdmi-a-6.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-3679-13f87d5402106b321a373222c64c5a56a05aa3b6/shard-dg2-436/igt@kms_ccs@random-ccs-data-4-tiled-dg2-mc-ccs@pipe-a-hdmi-a-6.html</a>
+   [18]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-dg2-466/igt@kms_ccs@random-ccs-data-4-tiled-dg2-mc-ccs@pipe-a-hdmi-a-6.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-dg2-466/igt@kms_ccs@random-ccs-data-4-tiled-dg2-mc-ccs@pipe-a-hdmi-a-6.html</a>
+
+  * igt@kms_ccs@random-ccs-data-4-tiled-dg2-rc-ccs-cc:
+    - shard-dg2-set2:     [PASS][19] -&gt; [INCOMPLETE][20] ([Intel XE#2705] / [Intel XE#4212])
+   [19]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-3679-13f87d5402106b321a373222c64c5a56a05aa3b6/shard-dg2-434/igt@kms_ccs@random-ccs-data-4-tiled-dg2-rc-ccs-cc.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-3679-13f87d5402106b321a373222c64c5a56a05aa3b6/shard-dg2-434/igt@kms_ccs@random-ccs-data-4-tiled-dg2-rc-ccs-cc.html</a>
+   [20]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-dg2-432/igt@kms_ccs@random-ccs-data-4-tiled-dg2-rc-ccs-cc.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-dg2-432/igt@kms_ccs@random-ccs-data-4-tiled-dg2-rc-ccs-cc.html</a>
+
+  * igt@kms_ccs@random-ccs-data-4-tiled-dg2-rc-ccs-cc@pipe-c-dp-2:
+    - shard-dg2-set2:     NOTRUN -&gt; [INCOMPLETE][21] ([Intel XE#2705] / [Intel XE#4212])
+   [21]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-dg2-432/igt@kms_ccs@random-ccs-data-4-tiled-dg2-rc-ccs-cc@pipe-c-dp-2.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-dg2-432/igt@kms_ccs@random-ccs-data-4-tiled-dg2-rc-ccs-cc@pipe-c-dp-2.html</a>
+
+  * igt@kms_chamelium_edid@dp-edid-stress-resolution-non-4k:
+    - shard-dg2-set2:     NOTRUN -&gt; [SKIP][22] ([Intel XE#373])
+   [22]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-dg2-435/igt@kms_chamelium_edid@dp-edid-stress-resolution-non-4k.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-dg2-435/igt@kms_chamelium_edid@dp-edid-stress-resolution-non-4k.html</a>
+
+  * igt@kms_chamelium_frames@vga-frame-dump:
+    - shard-adlp:         NOTRUN -&gt; [SKIP][23] ([Intel XE#373])
+   [23]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-adlp-4/igt@kms_chamelium_frames@vga-frame-dump.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-adlp-4/igt@kms_chamelium_frames@vga-frame-dump.html</a>
+
+  * igt@kms_chamelium_hpd@dp-hpd:
+    - shard-bmg:          NOTRUN -&gt; [SKIP][24] ([Intel XE#2252]) +2 other tests skip
+   [24]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-2/igt@kms_chamelium_hpd@dp-hpd.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-2/igt@kms_chamelium_hpd@dp-hpd.html</a>
+
+  * igt@kms_content_protection@atomic:
+    - shard-bmg:          NOTRUN -&gt; [FAIL][25] ([Intel XE#1178]) +1 other test fail
+   [25]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-2/igt@kms_content_protection@atomic.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-2/igt@kms_content_protection@atomic.html</a>
+
+  * igt@kms_content_protection@atomic-dpms@pipe-a-dp-4:
+    - shard-dg2-set2:     NOTRUN -&gt; [FAIL][26] ([Intel XE#1178]) +1 other test fail
+   [26]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-dg2-435/igt@kms_content_protection@atomic-dpms@pipe-a-dp-4.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-dg2-435/igt@kms_content_protection@atomic-dpms@pipe-a-dp-4.html</a>
+
+  * igt@kms_cursor_crc@cursor-offscreen-128x42:
+    - shard-bmg:          NOTRUN -&gt; [SKIP][27] ([Intel XE#2320]) +1 other test skip
+   [27]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-2/igt@kms_cursor_crc@cursor-offscreen-128x42.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-2/igt@kms_cursor_crc@cursor-offscreen-128x42.html</a>
+
+  * igt@kms_cursor_crc@cursor-random-512x512:
+    - shard-adlp:         NOTRUN -&gt; [SKIP][28] ([Intel XE#308])
+   [28]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-adlp-4/igt@kms_cursor_crc@cursor-random-512x512.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-adlp-4/igt@kms_cursor_crc@cursor-random-512x512.html</a>
+
+  * igt@kms_cursor_legacy@cursora-vs-flipb-legacy:
+    - shard-bmg:          [PASS][29] -&gt; [SKIP][30] ([Intel XE#2291]) +3 other tests skip
+   [29]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-3679-13f87d5402106b321a373222c64c5a56a05aa3b6/shard-bmg-4/igt@kms_cursor_legacy@cursora-vs-flipb-legacy.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-3679-13f87d5402106b321a373222c64c5a56a05aa3b6/shard-bmg-4/igt@kms_cursor_legacy@cursora-vs-flipb-legacy.html</a>
+   [30]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-6/igt@kms_cursor_legacy@cursora-vs-flipb-legacy.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-6/igt@kms_cursor_legacy@cursora-vs-flipb-legacy.html</a>
+
+  * igt@kms_cursor_legacy@cursorb-vs-flipb-varying-size:
+    - shard-adlp:         NOTRUN -&gt; [SKIP][31] ([Intel XE#309])
+   [31]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-adlp-4/igt@kms_cursor_legacy@cursorb-vs-flipb-varying-size.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-adlp-4/igt@kms_cursor_legacy@cursorb-vs-flipb-varying-size.html</a>
+
+  * igt@kms_dither@fb-8bpc-vs-panel-6bpc@pipe-a-hdmi-a-6:
+    - shard-dg2-set2:     NOTRUN -&gt; [SKIP][32] ([Intel XE#4494] / [i915#3804])
+   [32]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-dg2-435/igt@kms_dither@fb-8bpc-vs-panel-6bpc@pipe-a-hdmi-a-6.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-dg2-435/igt@kms_dither@fb-8bpc-vs-panel-6bpc@pipe-a-hdmi-a-6.html</a>
+
+  * igt@kms_dsc@dsc-with-output-formats-with-bpc:
+    - shard-bmg:          NOTRUN -&gt; [SKIP][33] ([Intel XE#2244])
+   [33]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-2/igt@kms_dsc@dsc-with-output-formats-with-bpc.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-2/igt@kms_dsc@dsc-with-output-formats-with-bpc.html</a>
+
+  * igt@kms_feature_discovery@display-2x:
+    - shard-adlp:         NOTRUN -&gt; [SKIP][34] ([Intel XE#702])
+   [34]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-adlp-4/igt@kms_feature_discovery@display-2x.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-adlp-4/igt@kms_feature_discovery@display-2x.html</a>
+
+  * igt@kms_flip@2x-flip-vs-modeset-vs-hang:
+    - shard-bmg:          [PASS][35] -&gt; [SKIP][36] ([Intel XE#2316]) +2 other tests skip
+   [35]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-3679-13f87d5402106b321a373222c64c5a56a05aa3b6/shard-bmg-4/igt@kms_flip@2x-flip-vs-modeset-vs-hang.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-3679-13f87d5402106b321a373222c64c5a56a05aa3b6/shard-bmg-4/igt@kms_flip@2x-flip-vs-modeset-vs-hang.html</a>
+   [36]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-6/igt@kms_flip@2x-flip-vs-modeset-vs-hang.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-6/igt@kms_flip@2x-flip-vs-modeset-vs-hang.html</a>
+
+  * igt@kms_flip@2x-wf_vblank-ts-check:
+    - shard-bmg:          NOTRUN -&gt; [SKIP][37] ([Intel XE#2316])
+   [37]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-6/igt@kms_flip@2x-wf_vblank-ts-check.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-6/igt@kms_flip@2x-wf_vblank-ts-check.html</a>
+
+  * igt@kms_flip_scaled_crc@flip-32bpp-ytile-to-64bpp-ytile-upscaling:
+    - shard-bmg:          NOTRUN -&gt; [SKIP][38] ([Intel XE#2293] / [Intel XE#2380])
+   [38]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-2/igt@kms_flip_scaled_crc@flip-32bpp-ytile-to-64bpp-ytile-upscaling.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-2/igt@kms_flip_scaled_crc@flip-32bpp-ytile-to-64bpp-ytile-upscaling.html</a>
+
+  * igt@kms_flip_scaled_crc@flip-32bpp-ytile-to-64bpp-ytile-upscaling@pipe-a-valid-mode:
+    - shard-bmg:          NOTRUN -&gt; [SKIP][39] ([Intel XE#2293])
+   [39]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-2/igt@kms_flip_scaled_crc@flip-32bpp-ytile-to-64bpp-ytile-upscaling@pipe-a-valid-mode.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-2/igt@kms_flip_scaled_crc@flip-32bpp-ytile-to-64bpp-ytile-upscaling@pipe-a-valid-mode.html</a>
+
+  * igt@kms_frontbuffer_tracking@drrs-1p-rte:
+    - shard-dg2-set2:     NOTRUN -&gt; [SKIP][40] ([Intel XE#651]) +1 other test skip
+   [40]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-dg2-435/igt@kms_frontbuffer_tracking@drrs-1p-rte.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-dg2-435/igt@kms_frontbuffer_tracking@drrs-1p-rte.html</a>
+
+  * igt@kms_frontbuffer_tracking@drrs-2p-primscrn-cur-indfb-draw-render:
+    - shard-bmg:          NOTRUN -&gt; [SKIP][41] ([Intel XE#2312]) +1 other test skip
+   [41]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-6/igt@kms_frontbuffer_tracking@drrs-2p-primscrn-cur-indfb-draw-render.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-6/igt@kms_frontbuffer_tracking@drrs-2p-primscrn-cur-indfb-draw-render.html</a>
+
+  * igt@kms_frontbuffer_tracking@fbc-2p-primscrn-cur-indfb-draw-blt:
+    - shard-bmg:          NOTRUN -&gt; [SKIP][42] ([Intel XE#5390]) +2 other tests skip
+   [42]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-2/igt@kms_frontbuffer_tracking@fbc-2p-primscrn-cur-indfb-draw-blt.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-2/igt@kms_frontbuffer_tracking@fbc-2p-primscrn-cur-indfb-draw-blt.html</a>
+
+  * igt@kms_frontbuffer_tracking@fbcdrrs-1p-offscren-pri-shrfb-draw-render:
+    - shard-adlp:         NOTRUN -&gt; [SKIP][43] ([Intel XE#651]) +2 other tests skip
+   [43]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-adlp-4/igt@kms_frontbuffer_tracking@fbcdrrs-1p-offscren-pri-shrfb-draw-render.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-adlp-4/igt@kms_frontbuffer_tracking@fbcdrrs-1p-offscren-pri-shrfb-draw-render.html</a>
+
+  * igt@kms_frontbuffer_tracking@fbcdrrs-2p-primscrn-cur-indfb-move:
+    - shard-adlp:         NOTRUN -&gt; [SKIP][44] ([Intel XE#656]) +6 other tests skip
+   [44]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-adlp-4/igt@kms_frontbuffer_tracking@fbcdrrs-2p-primscrn-cur-indfb-move.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-adlp-4/igt@kms_frontbuffer_tracking@fbcdrrs-2p-primscrn-cur-indfb-move.html</a>
+
+  * igt@kms_frontbuffer_tracking@fbcdrrs-2p-primscrn-spr-indfb-draw-render:
+    - shard-bmg:          NOTRUN -&gt; [SKIP][45] ([Intel XE#2311]) +6 other tests skip
+   [45]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-2/igt@kms_frontbuffer_tracking@fbcdrrs-2p-primscrn-spr-indfb-draw-render.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-2/igt@kms_frontbuffer_tracking@fbcdrrs-2p-primscrn-spr-indfb-draw-render.html</a>
+
+  * igt@kms_frontbuffer_tracking@fbcpsr-1p-pri-indfb-multidraw:
+    - shard-dg2-set2:     NOTRUN -&gt; [SKIP][46] ([Intel XE#653]) +1 other test skip
+   [46]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-dg2-435/igt@kms_frontbuffer_tracking@fbcpsr-1p-pri-indfb-multidraw.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-dg2-435/igt@kms_frontbuffer_tracking@fbcpsr-1p-pri-indfb-multidraw.html</a>
+
+  * igt@kms_frontbuffer_tracking@psr-2p-primscrn-spr-indfb-draw-mmap-wc:
+    - shard-bmg:          NOTRUN -&gt; [SKIP][47] ([Intel XE#2313]) +5 other tests skip
+   [47]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-2/igt@kms_frontbuffer_tracking@psr-2p-primscrn-spr-indfb-draw-mmap-wc.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-2/igt@kms_frontbuffer_tracking@psr-2p-primscrn-spr-indfb-draw-mmap-wc.html</a>
+
+  * igt@kms_frontbuffer_tracking@psr-suspend:
+    - shard-adlp:         NOTRUN -&gt; [SKIP][48] ([Intel XE#653]) +1 other test skip
+   [48]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-adlp-4/igt@kms_frontbuffer_tracking@psr-suspend.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-adlp-4/igt@kms_frontbuffer_tracking@psr-suspend.html</a>
+
+  * igt@kms_hdr@invalid-hdr:
+    - shard-bmg:          [PASS][49] -&gt; [SKIP][50] ([Intel XE#1503])
+   [49]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-3679-13f87d5402106b321a373222c64c5a56a05aa3b6/shard-bmg-4/igt@kms_hdr@invalid-hdr.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-3679-13f87d5402106b321a373222c64c5a56a05aa3b6/shard-bmg-4/igt@kms_hdr@invalid-hdr.html</a>
+   [50]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-1/igt@kms_hdr@invalid-hdr.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-1/igt@kms_hdr@invalid-hdr.html</a>
+
+  * igt@kms_joiner@invalid-modeset-big-joiner:
+    - shard-adlp:         NOTRUN -&gt; [SKIP][51] ([Intel XE#346])
+   [51]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-adlp-4/igt@kms_joiner@invalid-modeset-big-joiner.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-adlp-4/igt@kms_joiner@invalid-modeset-big-joiner.html</a>
+
+  * igt@kms_joiner@invalid-modeset-force-big-joiner:
+    - shard-bmg:          [PASS][52] -&gt; [SKIP][53] ([Intel XE#3012])
+   [52]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-3679-13f87d5402106b321a373222c64c5a56a05aa3b6/shard-bmg-7/igt@kms_joiner@invalid-modeset-force-big-joiner.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-3679-13f87d5402106b321a373222c64c5a56a05aa3b6/shard-bmg-7/igt@kms_joiner@invalid-modeset-force-big-joiner.html</a>
+   [53]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-6/igt@kms_joiner@invalid-modeset-force-big-joiner.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-6/igt@kms_joiner@invalid-modeset-force-big-joiner.html</a>
+
+  * igt@kms_joiner@switch-modeset-ultra-joiner-big-joiner:
+    - shard-bmg:          NOTRUN -&gt; [SKIP][54] ([Intel XE#4090])
+   [54]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-2/igt@kms_joiner@switch-modeset-ultra-joiner-big-joiner.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-2/igt@kms_joiner@switch-modeset-ultra-joiner-big-joiner.html</a>
+
+  * igt@kms_plane_multiple@2x-tiling-x:
+    - shard-bmg:          [PASS][55] -&gt; [SKIP][56] ([Intel XE#4596])
+   [55]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-3679-13f87d5402106b321a373222c64c5a56a05aa3b6/shard-bmg-4/igt@kms_plane_multiple@2x-tiling-x.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-3679-13f87d5402106b321a373222c64c5a56a05aa3b6/shard-bmg-4/igt@kms_plane_multiple@2x-tiling-x.html</a>
+   [56]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-6/igt@kms_plane_multiple@2x-tiling-x.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-6/igt@kms_plane_multiple@2x-tiling-x.html</a>
+
+  * igt@kms_pm_backlight@bad-brightness:
+    - shard-bmg:          NOTRUN -&gt; [SKIP][57] ([Intel XE#870])
+   [57]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-2/igt@kms_pm_backlight@bad-brightness.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-2/igt@kms_pm_backlight@bad-brightness.html</a>
+
+  * igt@kms_pm_dc@deep-pkgc:
+    - shard-adlp:         NOTRUN -&gt; [SKIP][58] ([Intel XE#2007])
+   [58]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-adlp-4/igt@kms_pm_dc@deep-pkgc.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-adlp-4/igt@kms_pm_dc@deep-pkgc.html</a>
+
+  * igt@kms_psr2_sf@pr-plane-move-sf-dmg-area:
+    - shard-adlp:         NOTRUN -&gt; [SKIP][59] ([Intel XE#1406] / [Intel XE#1489])
+   [59]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-adlp-4/igt@kms_psr2_sf@pr-plane-move-sf-dmg-area.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-adlp-4/igt@kms_psr2_sf@pr-plane-move-sf-dmg-area.html</a>
+
+  * igt@kms_psr2_sf@pr-primary-plane-update-sf-dmg-area:
+    - shard-bmg:          NOTRUN -&gt; [SKIP][60] ([Intel XE#1406] / [Intel XE#1489]) +1 other test skip
+   [60]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-2/igt@kms_psr2_sf@pr-primary-plane-update-sf-dmg-area.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-2/igt@kms_psr2_sf@pr-primary-plane-update-sf-dmg-area.html</a>
+
+  * igt@kms_psr2_su@page_flip-p010:
+    - shard-adlp:         NOTRUN -&gt; [SKIP][61] ([Intel XE#1122] / [Intel XE#1406] / [Intel XE#5580])
+   [61]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-adlp-4/igt@kms_psr2_su@page_flip-p010.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-adlp-4/igt@kms_psr2_su@page_flip-p010.html</a>
+
+  * igt@kms_psr@fbc-psr-primary-render:
+    - shard-bmg:          NOTRUN -&gt; [SKIP][62] ([Intel XE#1406] / [Intel XE#2234] / [Intel XE#2850]) +4 other tests skip
+   [62]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-2/igt@kms_psr@fbc-psr-primary-render.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-2/igt@kms_psr@fbc-psr-primary-render.html</a>
+
+  * igt@kms_psr@psr-sprite-plane-onoff:
+    - shard-adlp:         NOTRUN -&gt; [SKIP][63] ([Intel XE#1406] / [Intel XE#2850] / [Intel XE#929]) +1 other test skip
+   [63]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-adlp-4/igt@kms_psr@psr-sprite-plane-onoff.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-adlp-4/igt@kms_psr@psr-sprite-plane-onoff.html</a>
+
+  * igt@kms_psr@psr2-cursor-plane-move:
+    - shard-dg2-set2:     NOTRUN -&gt; [SKIP][64] ([Intel XE#1406] / [Intel XE#2850] / [Intel XE#929])
+   [64]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-dg2-435/igt@kms_psr@psr2-cursor-plane-move.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-dg2-435/igt@kms_psr@psr2-cursor-plane-move.html</a>
+
+  * igt@kms_rotation_crc@multiplane-rotation:
+    - shard-adlp:         [PASS][65] -&gt; [DMESG-WARN][66] ([Intel XE#2953] / [Intel XE#4173]) +5 other tests dmesg-warn
+   [65]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-3679-13f87d5402106b321a373222c64c5a56a05aa3b6/shard-adlp-8/igt@kms_rotation_crc@multiplane-rotation.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-3679-13f87d5402106b321a373222c64c5a56a05aa3b6/shard-adlp-8/igt@kms_rotation_crc@multiplane-rotation.html</a>
+   [66]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-adlp-2/igt@kms_rotation_crc@multiplane-rotation.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-adlp-2/igt@kms_rotation_crc@multiplane-rotation.html</a>
+
+  * igt@kms_rotation_crc@primary-y-tiled-reflect-x-90:
+    - shard-dg2-set2:     NOTRUN -&gt; [SKIP][67] ([Intel XE#3414])
+   [67]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-dg2-435/igt@kms_rotation_crc@primary-y-tiled-reflect-x-90.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-dg2-435/igt@kms_rotation_crc@primary-y-tiled-reflect-x-90.html</a>
+
+  * igt@kms_vrr@cmrr@pipe-a-edp-1:
+    - shard-lnl:          [PASS][68] -&gt; [FAIL][69] ([Intel XE#4459]) +1 other test fail
+   [68]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-3679-13f87d5402106b321a373222c64c5a56a05aa3b6/shard-lnl-2/igt@kms_vrr@cmrr@pipe-a-edp-1.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-3679-13f87d5402106b321a373222c64c5a56a05aa3b6/shard-lnl-2/igt@kms_vrr@cmrr@pipe-a-edp-1.html</a>
+   [69]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-lnl-5/igt@kms_vrr@cmrr@pipe-a-edp-1.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-lnl-5/igt@kms_vrr@cmrr@pipe-a-edp-1.html</a>
+
+  * igt@kms_vrr@seamless-rr-switch-drrs:
+    - shard-adlp:         NOTRUN -&gt; [SKIP][70] ([Intel XE#455]) +1 other test skip
+   [70]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-adlp-4/igt@kms_vrr@seamless-rr-switch-drrs.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-adlp-4/igt@kms_vrr@seamless-rr-switch-drrs.html</a>
+
+  * igt@kms_vrr@seamless-rr-switch-vrr:
+    - shard-dg2-set2:     NOTRUN -&gt; [SKIP][71] ([Intel XE#455])
+   [71]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-dg2-435/igt@kms_vrr@seamless-rr-switch-vrr.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-dg2-435/igt@kms_vrr@seamless-rr-switch-vrr.html</a>
+
+  * igt@xe_eudebug@basic-exec-queues:
+    - shard-bmg:          NOTRUN -&gt; [SKIP][72] ([Intel XE#4837]) +4 other tests skip
+   [72]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-2/igt@xe_eudebug@basic-exec-queues.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-2/igt@xe_eudebug@basic-exec-queues.html</a>
+
+  * igt@xe_eudebug@vm-bind-clear-faultable:
+    - shard-dg2-set2:     NOTRUN -&gt; [SKIP][73] ([Intel XE#4837])
+   [73]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-dg2-435/igt@xe_eudebug@vm-bind-clear-faultable.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-dg2-435/igt@xe_eudebug@vm-bind-clear-faultable.html</a>
+
+  * igt@xe_eudebug_online@pagefault-read:
+    - shard-adlp:         NOTRUN -&gt; [SKIP][74] ([Intel XE#4837] / [Intel XE#5565]) +2 other tests skip
+   [74]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-adlp-4/igt@xe_eudebug_online@pagefault-read.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-adlp-4/igt@xe_eudebug_online@pagefault-read.html</a>
+
+  * igt@xe_eudebug_sriov@deny-sriov:
+    - shard-bmg:          NOTRUN -&gt; [SKIP][75] ([Intel XE#5793])
+   [75]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-2/igt@xe_eudebug_sriov@deny-sriov.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-2/igt@xe_eudebug_sriov@deny-sriov.html</a>
+
+  * igt@xe_exec_basic@multigpu-no-exec-null-defer-bind:
+    - shard-bmg:          NOTRUN -&gt; [SKIP][76] ([Intel XE#2322]) +1 other test skip
+   [76]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-2/igt@xe_exec_basic@multigpu-no-exec-null-defer-bind.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-2/igt@xe_exec_basic@multigpu-no-exec-null-defer-bind.html</a>
+
+  * igt@xe_exec_basic@multigpu-no-exec-rebind:
+    - shard-adlp:         NOTRUN -&gt; [SKIP][77] ([Intel XE#1392] / [Intel XE#5575]) +1 other test skip
+   [77]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-adlp-4/igt@xe_exec_basic@multigpu-no-exec-rebind.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-adlp-4/igt@xe_exec_basic@multigpu-no-exec-rebind.html</a>
+
+  * igt@xe_exec_fault_mode@twice-userptr-invalidate-imm:
+    - shard-adlp:         NOTRUN -&gt; [SKIP][78] ([Intel XE#288] / [Intel XE#5561]) +4 other tests skip
+   [78]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-adlp-4/igt@xe_exec_fault_mode@twice-userptr-invalidate-imm.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-adlp-4/igt@xe_exec_fault_mode@twice-userptr-invalidate-imm.html</a>
+
+  * igt@xe_exec_reset@parallel-gt-reset:
+    - shard-dg2-set2:     [PASS][79] -&gt; [DMESG-WARN][80] ([Intel XE#3876])
+   [79]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-3679-13f87d5402106b321a373222c64c5a56a05aa3b6/shard-dg2-433/igt@xe_exec_reset@parallel-gt-reset.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-3679-13f87d5402106b321a373222c64c5a56a05aa3b6/shard-dg2-433/igt@xe_exec_reset@parallel-gt-reset.html</a>
+   [80]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-dg2-435/igt@xe_exec_reset@parallel-gt-reset.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-dg2-435/igt@xe_exec_reset@parallel-gt-reset.html</a>
+
+  * igt@xe_exec_system_allocator@once-mmap-new-huge-nomemset:
+    - shard-bmg:          NOTRUN -&gt; [SKIP][81] ([Intel XE#4943]) +6 other tests skip
+   [81]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-6/igt@xe_exec_system_allocator@once-mmap-new-huge-nomemset.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-6/igt@xe_exec_system_allocator@once-mmap-new-huge-nomemset.html</a>
+
+  * igt@xe_exec_system_allocator@threads-many-stride-free:
+    - shard-dg2-set2:     NOTRUN -&gt; [SKIP][82] ([Intel XE#4915]) +22 other tests skip
+   [82]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-dg2-435/igt@xe_exec_system_allocator@threads-many-stride-free.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-dg2-435/igt@xe_exec_system_allocator@threads-many-stride-free.html</a>
+
+  * igt@xe_exec_system_allocator@twice-large-new-race:
+    - shard-adlp:         NOTRUN -&gt; [SKIP][83] ([Intel XE#4915]) +39 other tests skip
+   [83]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-adlp-4/igt@xe_exec_system_allocator@twice-large-new-race.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-adlp-4/igt@xe_exec_system_allocator@twice-large-new-race.html</a>
+
+  * igt@xe_fault_injection@vm-create-fail-xe_exec_queue_create_bind:
+    - shard-bmg:          NOTRUN -&gt; [ABORT][84] ([Intel XE#4847])
+   [84]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-6/igt@xe_fault_injection@vm-create-fail-xe_exec_queue_create_bind.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-6/igt@xe_fault_injection@vm-create-fail-xe_exec_queue_create_bind.html</a>
+
+  * igt@xe_peer2peer@read@read-gpua-vram01-gpub-system-p2p:
+    - shard-dg2-set2:     NOTRUN -&gt; [FAIL][85] ([Intel XE#1173]) +2 other tests fail
+   [85]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-dg2-435/igt@xe_peer2peer@read@read-gpua-vram01-gpub-system-p2p.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-dg2-435/igt@xe_peer2peer@read@read-gpua-vram01-gpub-system-p2p.html</a>
+
+  * igt@xe_pm@s2idle-d3cold-basic-exec:
+    - shard-bmg:          NOTRUN -&gt; [SKIP][86] ([Intel XE#2284])
+   [86]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-2/igt@xe_pm@s2idle-d3cold-basic-exec.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-2/igt@xe_pm@s2idle-d3cold-basic-exec.html</a>
+
+  * igt@xe_pm@vram-d3cold-threshold:
+    - shard-bmg:          NOTRUN -&gt; [SKIP][87] ([Intel XE#579])
+   [87]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-6/igt@xe_pm@vram-d3cold-threshold.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-6/igt@xe_pm@vram-d3cold-threshold.html</a>
+
+  * igt@xe_pxp@pxp-stale-bo-exec-post-rpm:
+    - shard-bmg:          NOTRUN -&gt; [SKIP][88] ([Intel XE#4733])
+   [88]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-2/igt@xe_pxp@pxp-stale-bo-exec-post-rpm.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-2/igt@xe_pxp@pxp-stale-bo-exec-post-rpm.html</a>
+
+  * igt@xe_pxp@pxp-stale-queue-post-suspend:
+    - shard-adlp:         NOTRUN -&gt; [SKIP][89] ([Intel XE#4733] / [Intel XE#5594])
+   [89]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-adlp-4/igt@xe_pxp@pxp-stale-queue-post-suspend.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-adlp-4/igt@xe_pxp@pxp-stale-queue-post-suspend.html</a>
+
+  
+#### Possible fixes ####
+
+  * igt@kms_async_flips@alternate-sync-async-flip-atomic:
+    - shard-bmg:          [FAIL][90] ([Intel XE#3718]) -&gt; [PASS][91]
+   [90]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-3679-13f87d5402106b321a373222c64c5a56a05aa3b6/shard-bmg-7/igt@kms_async_flips@alternate-sync-async-flip-atomic.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-3679-13f87d5402106b321a373222c64c5a56a05aa3b6/shard-bmg-7/igt@kms_async_flips@alternate-sync-async-flip-atomic.html</a>
+   [91]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-6/igt@kms_async_flips@alternate-sync-async-flip-atomic.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-6/igt@kms_async_flips@alternate-sync-async-flip-atomic.html</a>
+
+  * igt@kms_atomic_transition@plane-all-modeset-transition@pipe-a-hdmi-a-1:
+    - shard-adlp:         [FAIL][92] ([Intel XE#3908]) -&gt; [PASS][93] +1 other test pass
+   [92]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-3679-13f87d5402106b321a373222c64c5a56a05aa3b6/shard-adlp-1/igt@kms_atomic_transition@plane-all-modeset-transition@pipe-a-hdmi-a-1.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-3679-13f87d5402106b321a373222c64c5a56a05aa3b6/shard-adlp-1/igt@kms_atomic_transition@plane-all-modeset-transition@pipe-a-hdmi-a-1.html</a>
+   [93]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-adlp-6/igt@kms_atomic_transition@plane-all-modeset-transition@pipe-a-hdmi-a-1.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-adlp-6/igt@kms_atomic_transition@plane-all-modeset-transition@pipe-a-hdmi-a-1.html</a>
+
+  * igt@kms_big_fb@y-tiled-max-hw-stride-64bpp-rotate-0-hflip-async-flip:
+    - shard-adlp:         [DMESG-FAIL][94] ([Intel XE#4543]) -&gt; [PASS][95]
+   [94]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-3679-13f87d5402106b321a373222c64c5a56a05aa3b6/shard-adlp-3/igt@kms_big_fb@y-tiled-max-hw-stride-64bpp-rotate-0-hflip-async-flip.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-3679-13f87d5402106b321a373222c64c5a56a05aa3b6/shard-adlp-3/igt@kms_big_fb@y-tiled-max-hw-stride-64bpp-rotate-0-hflip-async-flip.html</a>
+   [95]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-adlp-8/igt@kms_big_fb@y-tiled-max-hw-stride-64bpp-rotate-0-hflip-async-flip.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-adlp-8/igt@kms_big_fb@y-tiled-max-hw-stride-64bpp-rotate-0-hflip-async-flip.html</a>
+
+  * igt@kms_bw@connected-linear-tiling-2-displays-2160x1440p:
+    - shard-bmg:          [SKIP][96] ([Intel XE#2314] / [Intel XE#2894]) -&gt; [PASS][97]
+   [96]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-3679-13f87d5402106b321a373222c64c5a56a05aa3b6/shard-bmg-6/igt@kms_bw@connected-linear-tiling-2-displays-2160x1440p.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-3679-13f87d5402106b321a373222c64c5a56a05aa3b6/shard-bmg-6/igt@kms_bw@connected-linear-tiling-2-displays-2160x1440p.html</a>
+   [97]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-4/igt@kms_bw@connected-linear-tiling-2-displays-2160x1440p.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-4/igt@kms_bw@connected-linear-tiling-2-displays-2160x1440p.html</a>
+
+  * igt@kms_ccs@random-ccs-data-4-tiled-dg2-rc-ccs@pipe-a-hdmi-a-6:
+    - shard-dg2-set2:     [DMESG-WARN][98] ([Intel XE#1727] / [Intel XE#3113]) -&gt; [PASS][99]
+   [98]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-3679-13f87d5402106b321a373222c64c5a56a05aa3b6/shard-dg2-466/igt@kms_ccs@random-ccs-data-4-tiled-dg2-rc-ccs@pipe-a-hdmi-a-6.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-3679-13f87d5402106b321a373222c64c5a56a05aa3b6/shard-dg2-466/igt@kms_ccs@random-ccs-data-4-tiled-dg2-rc-ccs@pipe-a-hdmi-a-6.html</a>
+   [99]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-dg2-436/igt@kms_ccs@random-ccs-data-4-tiled-dg2-rc-ccs@pipe-a-hdmi-a-6.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-dg2-436/igt@kms_ccs@random-ccs-data-4-tiled-dg2-rc-ccs@pipe-a-hdmi-a-6.html</a>
+
+  * igt@kms_cursor_legacy@cursorb-vs-flipa-atomic-transitions-varying-size:
+    - shard-bmg:          [SKIP][100] ([Intel XE#2291]) -&gt; [PASS][101] +2 other tests pass
+   [100]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-3679-13f87d5402106b321a373222c64c5a56a05aa3b6/shard-bmg-6/igt@kms_cursor_legacy@cursorb-vs-flipa-atomic-transitions-varying-size.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-3679-13f87d5402106b321a373222c64c5a56a05aa3b6/shard-bmg-6/igt@kms_cursor_legacy@cursorb-vs-flipa-atomic-transitions-varying-size.html</a>
+   [101]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-3/igt@kms_cursor_legacy@cursorb-vs-flipa-atomic-transitions-varying-size.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-3/igt@kms_cursor_legacy@cursorb-vs-flipa-atomic-transitions-varying-size.html</a>
+
+  * igt@kms_dp_aux_dev:
+    - shard-bmg:          [SKIP][102] ([Intel XE#3009]) -&gt; [PASS][103]
+   [102]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-3679-13f87d5402106b321a373222c64c5a56a05aa3b6/shard-bmg-6/igt@kms_dp_aux_dev.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-3679-13f87d5402106b321a373222c64c5a56a05aa3b6/shard-bmg-6/igt@kms_dp_aux_dev.html</a>
+   [103]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-4/igt@kms_dp_aux_dev.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-4/igt@kms_dp_aux_dev.html</a>
+
+  * igt@kms_flip@2x-plain-flip-fb-recreate-interruptible:
+    - shard-bmg:          [SKIP][104] ([Intel XE#2316]) -&gt; [PASS][105] +6 other tests pass
+   [104]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-3679-13f87d5402106b321a373222c64c5a56a05aa3b6/shard-bmg-6/igt@kms_flip@2x-plain-flip-fb-recreate-interruptible.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-3679-13f87d5402106b321a373222c64c5a56a05aa3b6/shard-bmg-6/igt@kms_flip@2x-plain-flip-fb-recreate-interruptible.html</a>
+   [105]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-8/igt@kms_flip@2x-plain-flip-fb-recreate-interruptible.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-8/igt@kms_flip@2x-plain-flip-fb-recreate-interruptible.html</a>
+
+  * igt@kms_flip@flip-vs-dpms-on-nop-interruptible@a-hdmi-a6:
+    - shard-dg2-set2:     [FAIL][106] ([Intel XE#3098]) -&gt; [PASS][107] +1 other test pass
+   [106]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-3679-13f87d5402106b321a373222c64c5a56a05aa3b6/shard-dg2-436/igt@kms_flip@flip-vs-dpms-on-nop-interruptible@a-hdmi-a6.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-3679-13f87d5402106b321a373222c64c5a56a05aa3b6/shard-dg2-436/igt@kms_flip@flip-vs-dpms-on-nop-interruptible@a-hdmi-a6.html</a>
+   [107]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-dg2-464/igt@kms_flip@flip-vs-dpms-on-nop-interruptible@a-hdmi-a6.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-dg2-464/igt@kms_flip@flip-vs-dpms-on-nop-interruptible@a-hdmi-a6.html</a>
+
+  * igt@kms_flip@flip-vs-expired-vblank@a-edp1:
+    - shard-lnl:          [FAIL][108] ([Intel XE#301]) -&gt; [PASS][109] +3 other tests pass
+   [108]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-3679-13f87d5402106b321a373222c64c5a56a05aa3b6/shard-lnl-2/igt@kms_flip@flip-vs-expired-vblank@a-edp1.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-3679-13f87d5402106b321a373222c64c5a56a05aa3b6/shard-lnl-2/igt@kms_flip@flip-vs-expired-vblank@a-edp1.html</a>
+   [109]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-lnl-5/igt@kms_flip@flip-vs-expired-vblank@a-edp1.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-lnl-5/igt@kms_flip@flip-vs-expired-vblank@a-edp1.html</a>
+
+  * igt@kms_flip@plain-flip-fb-recreate-interruptible@a-edp1:
+    - shard-lnl:          [FAIL][110] ([Intel XE#3098]) -&gt; [PASS][111] +1 other test pass
+   [110]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-3679-13f87d5402106b321a373222c64c5a56a05aa3b6/shard-lnl-1/igt@kms_flip@plain-flip-fb-recreate-interruptible@a-edp1.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-3679-13f87d5402106b321a373222c64c5a56a05aa3b6/shard-lnl-1/igt@kms_flip@plain-flip-fb-recreate-interruptible@a-edp1.html</a>
+   [111]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-lnl-7/igt@kms_flip@plain-flip-fb-recreate-interruptible@a-edp1.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-lnl-7/igt@kms_flip@plain-flip-fb-recreate-interruptible@a-edp1.html</a>
+
+  * igt@kms_hdr@static-toggle-suspend:
+    - shard-bmg:          [SKIP][112] ([Intel XE#1503]) -&gt; [PASS][113] +2 other tests pass
+   [112]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-3679-13f87d5402106b321a373222c64c5a56a05aa3b6/shard-bmg-6/igt@kms_hdr@static-toggle-suspend.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-3679-13f87d5402106b321a373222c64c5a56a05aa3b6/shard-bmg-6/igt@kms_hdr@static-toggle-suspend.html</a>
+   [113]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-3/igt@kms_hdr@static-toggle-suspend.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-3/igt@kms_hdr@static-toggle-suspend.html</a>
+
+  * igt@kms_plane_scaling@2x-scaler-multi-pipe:
+    - shard-bmg:          [SKIP][114] ([Intel XE#2571]) -&gt; [PASS][115]
+   [114]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-3679-13f87d5402106b321a373222c64c5a56a05aa3b6/shard-bmg-6/igt@kms_plane_scaling@2x-scaler-multi-pipe.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-3679-13f87d5402106b321a373222c64c5a56a05aa3b6/shard-bmg-6/igt@kms_plane_scaling@2x-scaler-multi-pipe.html</a>
+   [115]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-3/igt@kms_plane_scaling@2x-scaler-multi-pipe.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-3/igt@kms_plane_scaling@2x-scaler-multi-pipe.html</a>
+
+  * igt@kms_plane_scaling@plane-downscale-factor-0-75-with-modifiers@pipe-b:
+    - shard-adlp:         [DMESG-WARN][116] ([Intel XE#2953] / [Intel XE#4173]) -&gt; [PASS][117] +11 other tests pass
+   [116]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-3679-13f87d5402106b321a373222c64c5a56a05aa3b6/shard-adlp-2/igt@kms_plane_scaling@plane-downscale-factor-0-75-with-modifiers@pipe-b.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-3679-13f87d5402106b321a373222c64c5a56a05aa3b6/shard-adlp-2/igt@kms_plane_scaling@plane-downscale-factor-0-75-with-modifiers@pipe-b.html</a>
+   [117]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-adlp-3/igt@kms_plane_scaling@plane-downscale-factor-0-75-with-modifiers@pipe-b.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-adlp-3/igt@kms_plane_scaling@plane-downscale-factor-0-75-with-modifiers@pipe-b.html</a>
+
+  * igt@kms_setmode@invalid-clone-single-crtc:
+    - shard-bmg:          [SKIP][118] ([Intel XE#1435]) -&gt; [PASS][119]
+   [118]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-3679-13f87d5402106b321a373222c64c5a56a05aa3b6/shard-bmg-6/igt@kms_setmode@invalid-clone-single-crtc.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-3679-13f87d5402106b321a373222c64c5a56a05aa3b6/shard-bmg-6/igt@kms_setmode@invalid-clone-single-crtc.html</a>
+   [119]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-8/igt@kms_setmode@invalid-clone-single-crtc.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-8/igt@kms_setmode@invalid-clone-single-crtc.html</a>
+
+  * igt@xe_exec_basic@multigpu-once-null:
+    - shard-dg2-set2:     [SKIP][120] ([Intel XE#1392]) -&gt; [PASS][121] +2 other tests pass
+   [120]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-3679-13f87d5402106b321a373222c64c5a56a05aa3b6/shard-dg2-432/igt@xe_exec_basic@multigpu-once-null.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-3679-13f87d5402106b321a373222c64c5a56a05aa3b6/shard-dg2-432/igt@xe_exec_basic@multigpu-once-null.html</a>
+   [121]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-dg2-435/igt@xe_exec_basic@multigpu-once-null.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-dg2-435/igt@xe_exec_basic@multigpu-once-null.html</a>
+
+  * igt@xe_exec_reset@cm-close-fd:
+    - shard-adlp:         [DMESG-WARN][122] ([Intel XE#3868]) -&gt; [PASS][123]
+   [122]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-3679-13f87d5402106b321a373222c64c5a56a05aa3b6/shard-adlp-3/igt@xe_exec_reset@cm-close-fd.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-3679-13f87d5402106b321a373222c64c5a56a05aa3b6/shard-adlp-3/igt@xe_exec_reset@cm-close-fd.html</a>
+   [123]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-adlp-8/igt@xe_exec_reset@cm-close-fd.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-adlp-8/igt@xe_exec_reset@cm-close-fd.html</a>
+
+  * igt@xe_pm@s2idle-basic-exec:
+    - shard-adlp:         [ABORT][124] ([Intel XE#4847]) -&gt; [PASS][125]
+   [124]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-3679-13f87d5402106b321a373222c64c5a56a05aa3b6/shard-adlp-9/igt@xe_pm@s2idle-basic-exec.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-3679-13f87d5402106b321a373222c64c5a56a05aa3b6/shard-adlp-9/igt@xe_pm@s2idle-basic-exec.html</a>
+   [125]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-adlp-4/igt@xe_pm@s2idle-basic-exec.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-adlp-4/igt@xe_pm@s2idle-basic-exec.html</a>
+
+  
+#### Warnings ####
+
+  * igt@kms_ccs@random-ccs-data-4-tiled-dg2-mc-ccs@pipe-a-dp-4:
+    - shard-dg2-set2:     [DMESG-WARN][126] ([Intel XE#1727] / [Intel XE#3113]) -&gt; [INCOMPLETE][127] ([Intel XE#3124])
+   [126]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-3679-13f87d5402106b321a373222c64c5a56a05aa3b6/shard-dg2-436/igt@kms_ccs@random-ccs-data-4-tiled-dg2-mc-ccs@pipe-a-dp-4.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-3679-13f87d5402106b321a373222c64c5a56a05aa3b6/shard-dg2-436/igt@kms_ccs@random-ccs-data-4-tiled-dg2-mc-ccs@pipe-a-dp-4.html</a>
+   [127]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-dg2-466/igt@kms_ccs@random-ccs-data-4-tiled-dg2-mc-ccs@pipe-a-dp-4.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-dg2-466/igt@kms_ccs@random-ccs-data-4-tiled-dg2-mc-ccs@pipe-a-dp-4.html</a>
+
+  * igt@kms_ccs@random-ccs-data-4-tiled-dg2-rc-ccs:
+    - shard-dg2-set2:     [INCOMPLETE][128] ([Intel XE#1727] / [Intel XE#3113] / [Intel XE#3124] / [Intel XE#4345]) -&gt; [INCOMPLETE][129] ([Intel XE#2705] / [Intel XE#4212] / [Intel XE#4345])
+   [128]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-3679-13f87d5402106b321a373222c64c5a56a05aa3b6/shard-dg2-466/igt@kms_ccs@random-ccs-data-4-tiled-dg2-rc-ccs.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-3679-13f87d5402106b321a373222c64c5a56a05aa3b6/shard-dg2-466/igt@kms_ccs@random-ccs-data-4-tiled-dg2-rc-ccs.html</a>
+   [129]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-dg2-436/igt@kms_ccs@random-ccs-data-4-tiled-dg2-rc-ccs.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-dg2-436/igt@kms_ccs@random-ccs-data-4-tiled-dg2-rc-ccs.html</a>
+
+  * igt@kms_ccs@random-ccs-data-4-tiled-dg2-rc-ccs@pipe-a-dp-4:
+    - shard-dg2-set2:     [INCOMPLETE][130] ([Intel XE#3124]) -&gt; [INCOMPLETE][131] ([Intel XE#2705] / [Intel XE#4212])
+   [130]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-3679-13f87d5402106b321a373222c64c5a56a05aa3b6/shard-dg2-466/igt@kms_ccs@random-ccs-data-4-tiled-dg2-rc-ccs@pipe-a-dp-4.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-3679-13f87d5402106b321a373222c64c5a56a05aa3b6/shard-dg2-466/igt@kms_ccs@random-ccs-data-4-tiled-dg2-rc-ccs@pipe-a-dp-4.html</a>
+   [131]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-dg2-436/igt@kms_ccs@random-ccs-data-4-tiled-dg2-rc-ccs@pipe-a-dp-4.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-dg2-436/igt@kms_ccs@random-ccs-data-4-tiled-dg2-rc-ccs@pipe-a-dp-4.html</a>
+
+  * igt@kms_frontbuffer_tracking@drrs-2p-pri-indfb-multidraw:
+    - shard-bmg:          [SKIP][132] ([Intel XE#2312]) -&gt; [SKIP][133] ([Intel XE#2311]) +11 other tests skip
+   [132]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-3679-13f87d5402106b321a373222c64c5a56a05aa3b6/shard-bmg-6/igt@kms_frontbuffer_tracking@drrs-2p-pri-indfb-multidraw.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-3679-13f87d5402106b321a373222c64c5a56a05aa3b6/shard-bmg-6/igt@kms_frontbuffer_tracking@drrs-2p-pri-indfb-multidraw.html</a>
+   [133]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-4/igt@kms_frontbuffer_tracking@drrs-2p-pri-indfb-multidraw.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-4/igt@kms_frontbuffer_tracking@drrs-2p-pri-indfb-multidraw.html</a>
+
+  * igt@kms_frontbuffer_tracking@drrs-2p-scndscrn-indfb-pgflip-blt:
+    - shard-bmg:          [SKIP][134] ([Intel XE#2311]) -&gt; [SKIP][135] ([Intel XE#2312]) +12 other tests skip
+   [134]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-3679-13f87d5402106b321a373222c64c5a56a05aa3b6/shard-bmg-4/igt@kms_frontbuffer_tracking@drrs-2p-scndscrn-indfb-pgflip-blt.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-3679-13f87d5402106b321a373222c64c5a56a05aa3b6/shard-bmg-4/igt@kms_frontbuffer_tracking@drrs-2p-scndscrn-indfb-pgflip-blt.html</a>
+   [135]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-6/igt@kms_frontbuffer_tracking@drrs-2p-scndscrn-indfb-pgflip-blt.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-6/igt@kms_frontbuffer_tracking@drrs-2p-scndscrn-indfb-pgflip-blt.html</a>
+
+  * igt@kms_frontbuffer_tracking@fbc-2p-scndscrn-shrfb-pgflip-blt:
+    - shard-bmg:          [SKIP][136] ([Intel XE#5390]) -&gt; [SKIP][137] ([Intel XE#2312]) +4 other tests skip
+   [136]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-3679-13f87d5402106b321a373222c64c5a56a05aa3b6/shard-bmg-7/igt@kms_frontbuffer_tracking@fbc-2p-scndscrn-shrfb-pgflip-blt.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-3679-13f87d5402106b321a373222c64c5a56a05aa3b6/shard-bmg-7/igt@kms_frontbuffer_tracking@fbc-2p-scndscrn-shrfb-pgflip-blt.html</a>
+   [137]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-6/igt@kms_frontbuffer_tracking@fbc-2p-scndscrn-shrfb-pgflip-blt.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-6/igt@kms_frontbuffer_tracking@fbc-2p-scndscrn-shrfb-pgflip-blt.html</a>
+
+  * igt@kms_frontbuffer_tracking@fbc-2p-scndscrn-spr-indfb-draw-mmap-wc:
+    - shard-bmg:          [SKIP][138] ([Intel XE#2312]) -&gt; [SKIP][139] ([Intel XE#5390]) +6 other tests skip
+   [138]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-3679-13f87d5402106b321a373222c64c5a56a05aa3b6/shard-bmg-6/igt@kms_frontbuffer_tracking@fbc-2p-scndscrn-spr-indfb-draw-mmap-wc.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-3679-13f87d5402106b321a373222c64c5a56a05aa3b6/shard-bmg-6/igt@kms_frontbuffer_tracking@fbc-2p-scndscrn-spr-indfb-draw-mmap-wc.html</a>
+   [139]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-4/igt@kms_frontbuffer_tracking@fbc-2p-scndscrn-spr-indfb-draw-mmap-wc.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-4/igt@kms_frontbuffer_tracking@fbc-2p-scndscrn-spr-indfb-draw-mmap-wc.html</a>
+
+  * igt@kms_frontbuffer_tracking@fbcpsr-2p-primscrn-spr-indfb-onoff:
+    - shard-bmg:          [SKIP][140] ([Intel XE#2312]) -&gt; [SKIP][141] ([Intel XE#2313]) +10 other tests skip
+   [140]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-3679-13f87d5402106b321a373222c64c5a56a05aa3b6/shard-bmg-6/igt@kms_frontbuffer_tracking@fbcpsr-2p-primscrn-spr-indfb-onoff.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-3679-13f87d5402106b321a373222c64c5a56a05aa3b6/shard-bmg-6/igt@kms_frontbuffer_tracking@fbcpsr-2p-primscrn-spr-indfb-onoff.html</a>
+   [141]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-3/igt@kms_frontbuffer_tracking@fbcpsr-2p-primscrn-spr-indfb-onoff.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-3/igt@kms_frontbuffer_tracking@fbcpsr-2p-primscrn-spr-indfb-onoff.html</a>
+
+  * igt@kms_frontbuffer_tracking@fbcpsr-2p-scndscrn-shrfb-pgflip-blt:
+    - shard-bmg:          [SKIP][142] ([Intel XE#2313]) -&gt; [SKIP][143] ([Intel XE#2312]) +11 other tests skip
+   [142]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-3679-13f87d5402106b321a373222c64c5a56a05aa3b6/shard-bmg-4/igt@kms_frontbuffer_tracking@fbcpsr-2p-scndscrn-shrfb-pgflip-blt.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-3679-13f87d5402106b321a373222c64c5a56a05aa3b6/shard-bmg-4/igt@kms_frontbuffer_tracking@fbcpsr-2p-scndscrn-shrfb-pgflip-blt.html</a>
+   [143]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-6/igt@kms_frontbuffer_tracking@fbcpsr-2p-scndscrn-shrfb-pgflip-blt.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-6/igt@kms_frontbuffer_tracking@fbcpsr-2p-scndscrn-shrfb-pgflip-blt.html</a>
+
+  * igt@kms_hdr@brightness-with-hdr:
+    - shard-bmg:          [SKIP][144] ([Intel XE#3544]) -&gt; [SKIP][145] ([Intel XE#3374] / [Intel XE#3544])
+   [144]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-3679-13f87d5402106b321a373222c64c5a56a05aa3b6/shard-bmg-1/igt@kms_hdr@brightness-with-hdr.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-3679-13f87d5402106b321a373222c64c5a56a05aa3b6/shard-bmg-1/igt@kms_hdr@brightness-with-hdr.html</a>
+   [145]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-4/igt@kms_hdr@brightness-with-hdr.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-4/igt@kms_hdr@brightness-with-hdr.html</a>
+
+  * igt@kms_tiled_display@basic-test-pattern:
+    - shard-bmg:          [FAIL][146] ([Intel XE#1729]) -&gt; [SKIP][147] ([Intel XE#2426])
+   [146]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-3679-13f87d5402106b321a373222c64c5a56a05aa3b6/shard-bmg-1/igt@kms_tiled_display@basic-test-pattern.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-3679-13f87d5402106b321a373222c64c5a56a05aa3b6/shard-bmg-1/igt@kms_tiled_display@basic-test-pattern.html</a>
+   [147]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-7/igt@kms_tiled_display@basic-test-pattern.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-7/igt@kms_tiled_display@basic-test-pattern.html</a>
+    - shard-dg2-set2:     [FAIL][148] ([Intel XE#1729]) -&gt; [SKIP][149] ([Intel XE#362])
+   [148]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-3679-13f87d5402106b321a373222c64c5a56a05aa3b6/shard-dg2-434/igt@kms_tiled_display@basic-test-pattern.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-3679-13f87d5402106b321a373222c64c5a56a05aa3b6/shard-dg2-434/igt@kms_tiled_display@basic-test-pattern.html</a>
+   [149]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-dg2-463/igt@kms_tiled_display@basic-test-pattern.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-dg2-463/igt@kms_tiled_display@basic-test-pattern.html</a>
+
+  * igt@kms_tiled_display@basic-test-pattern-with-chamelium:
+    - shard-bmg:          [SKIP][150] ([Intel XE#2509]) -&gt; [SKIP][151] ([Intel XE#2426])
+   [150]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-3679-13f87d5402106b321a373222c64c5a56a05aa3b6/shard-bmg-1/igt@kms_tiled_display@basic-test-pattern-with-chamelium.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-3679-13f87d5402106b321a373222c64c5a56a05aa3b6/shard-bmg-1/igt@kms_tiled_display@basic-test-pattern-with-chamelium.html</a>
+   [151]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-4/igt@kms_tiled_display@basic-test-pattern-with-chamelium.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-bmg-4/igt@kms_tiled_display@basic-test-pattern-with-chamelium.html</a>
+
+  * igt@xe_peer2peer@write:
+    - shard-dg2-set2:     [SKIP][152] ([Intel XE#1061]) -&gt; [FAIL][153] ([Intel XE#1173])
+   [152]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-3679-13f87d5402106b321a373222c64c5a56a05aa3b6/shard-dg2-432/igt@xe_peer2peer@write.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-3679-13f87d5402106b321a373222c64c5a56a05aa3b6/shard-dg2-432/igt@xe_peer2peer@write.html</a>
+   [153]: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-dg2-435/igt@xe_peer2peer@write.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/shard-dg2-435/igt@xe_peer2peer@write.html</a>
+
+  
+  {name}: This element is suppressed. This means it is ignored when computing
+          the status of the difference (SUCCESS, WARNING, or FAILURE).
+
+  [Intel XE#1061]: <a
+href="https://gitlab.freedesktop.org/drm/xe/kernel/issues/1061">https://gitlab.freedesktop.org/drm/xe/kernel/issues/1061</a>
+  [Intel XE#1122]: <a
+href="https://gitlab.freedesktop.org/drm/xe/kernel/issues/1122">https://gitlab.freedesktop.org/drm/xe/kernel/issues/1122</a>
+  [Intel XE#1124]: <a
+href="https://gitlab.freedesktop.org/drm/xe/kernel/issues/1124">https://gitlab.freedesktop.org/drm/xe/kernel/issues/1124</a>
+  [Intel XE#1173]: <a
+href="https://gitlab.freedesktop.org/drm/xe/kernel/issues/1173">https://gitlab.freedesktop.org/drm/xe/kernel/issues/1173</a>
+  [Intel XE#1178]: <a
+href="https://gitlab.freedesktop.org/drm/xe/kernel/issues/1178">https://gitlab.freedesktop.org/drm/xe/kernel/issues/1178</a>
+  [Intel XE#1392]: <a
+href="https://gitlab.freedesktop.org/drm/xe/kernel/issues/1392">https://gitlab.freedesktop.org/drm/xe/kernel/issues/1392</a>
+  [Intel XE#1406]: <a
+href="https://gitlab.freedesktop.org/drm/xe/kernel/issues/1406">https://gitlab.freedesktop.org/drm/xe/kernel/issues/1406</a>
+  [Intel XE#1435]: <a
+href="https://gitlab.freedesktop.org/drm/xe/kernel/issues/1435">https://gitlab.freedesktop.org/drm/xe/kernel/issues/1435</a>
+  [Intel XE#1489]: <a
+href="https://gitlab.freedesktop.org/drm/xe/kernel/issues/1489">https://gitlab.freedesktop.org/drm/xe/kernel/issues/1489</a>
+  [Intel XE#1503]: <a
+href="https://gitlab.freedesktop.org/drm/xe/kernel/issues/1503">https://gitlab.freedesktop.org/drm/xe/kernel/issues/1503</a>
+  [Intel XE#1727]: <a
+href="https://gitlab.freedesktop.org/drm/xe/kernel/issues/1727">https://gitlab.freedesktop.org/drm/xe/kernel/issues/1727</a>
+  [Intel XE#1729]: <a
+href="https://gitlab.freedesktop.org/drm/xe/kernel/issues/1729">https://gitlab.freedesktop.org/drm/xe/kernel/issues/1729</a>
+  [Intel XE#2007]: <a
+href="https://gitlab.freedesktop.org/drm/xe/kernel/issues/2007">https://gitlab.freedesktop.org/drm/xe/kernel/issues/2007</a>
+  [Intel XE#2234]: <a
+href="https://gitlab.freedesktop.org/drm/xe/kernel/issues/2234">https://gitlab.freedesktop.org/drm/xe/kernel/issues/2234</a>
+  [Intel XE#2244]: <a
+href="https://gitlab.freedesktop.org/drm/xe/kernel/issues/2244">https://gitlab.freedesktop.org/drm/xe/kernel/issues/2244</a>
+  [Intel XE#2252]: <a
+href="https://gitlab.freedesktop.org/drm/xe/kernel/issues/2252">https://gitlab.freedesktop.org/drm/xe/kernel/issues/2252</a>
+  [Intel XE#2284]: <a
+href="https://gitlab.freedesktop.org/drm/xe/kernel/issues/2284">https://gitlab.freedesktop.org/drm/xe/kernel/issues/2284</a>
+  [Intel XE#2291]: <a
+href="https://gitlab.freedesktop.org/drm/xe/kernel/issues/2291">https://gitlab.freedesktop.org/drm/xe/kernel/issues/2291</a>
+  [Intel XE#2293]: <a
+href="https://gitlab.freedesktop.org/drm/xe/kernel/issues/2293">https://gitlab.freedesktop.org/drm/xe/kernel/issues/2293</a>
+  [Intel XE#2311]: <a
+href="https://gitlab.freedesktop.org/drm/xe/kernel/issues/2311">https://gitlab.freedesktop.org/drm/xe/kernel/issues/2311</a>
+  [Intel XE#2312]: <a
+href="https://gitlab.freedesktop.org/drm/xe/kernel/issues/2312">https://gitlab.freedesktop.org/drm/xe/kernel/issues/2312</a>
+  [Intel XE#2313]: <a
+href="https://gitlab.freedesktop.org/drm/xe/kernel/issues/2313">https://gitlab.freedesktop.org/drm/xe/kernel/issues/2313</a>
+  [Intel XE#2314]: <a
+href="https://gitlab.freedesktop.org/drm/xe/kernel/issues/2314">https://gitlab.freedesktop.org/drm/xe/kernel/issues/2314</a>
+  [Intel XE#2316]: <a
+href="https://gitlab.freedesktop.org/drm/xe/kernel/issues/2316">https://gitlab.freedesktop.org/drm/xe/kernel/issues/2316</a>
+  [Intel XE#2320]: <a
+href="https://gitlab.freedesktop.org/drm/xe/kernel/issues/2320">https://gitlab.freedesktop.org/drm/xe/kernel/issues/2320</a>
+  [Intel XE#2322]: <a
+href="https://gitlab.freedesktop.org/drm/xe/kernel/issues/2322">https://gitlab.freedesktop.org/drm/xe/kernel/issues/2322</a>
+  [Intel XE#2380]: <a
+href="https://gitlab.freedesktop.org/drm/xe/kernel/issues/2380">https://gitlab.freedesktop.org/drm/xe/kernel/issues/2380</a>
+  [Intel XE#2426]: <a
+href="https://gitlab.freedesktop.org/drm/xe/kernel/issues/2426">https://gitlab.freedesktop.org/drm/xe/kernel/issues/2426</a>
+  [Intel XE#2509]: <a
+href="https://gitlab.freedesktop.org/drm/xe/kernel/issues/2509">https://gitlab.freedesktop.org/drm/xe/kernel/issues/2509</a>
+  [Intel XE#2571]: <a
+href="https://gitlab.freedesktop.org/drm/xe/kernel/issues/2571">https://gitlab.freedesktop.org/drm/xe/kernel/issues/2571</a>
+  [Intel XE#2652]: <a
+href="https://gitlab.freedesktop.org/drm/xe/kernel/issues/2652">https://gitlab.freedesktop.org/drm/xe/kernel/issues/2652</a>
+  [Intel XE#2705]: <a
+href="https://gitlab.freedesktop.org/drm/xe/kernel/issues/2705">https://gitlab.freedesktop.org/drm/xe/kernel/issues/2705</a>
+  [Intel XE#2850]: <a
+href="https://gitlab.freedesktop.org/drm/xe/kernel/issues/2850">https://gitlab.freedesktop.org/drm/xe/kernel/issues/2850</a>
+  [Intel XE#288]: <a
+href="https://gitlab.freedesktop.org/drm/xe/kernel/issues/288">https://gitlab.freedesktop.org/drm/xe/kernel/issues/288</a>
+  [Intel XE#2887]: <a
+href="https://gitlab.freedesktop.org/drm/xe/kernel/issues/2887">https://gitlab.freedesktop.org/drm/xe/kernel/issues/2887</a>
+  [Intel XE#2894]: <a
+href="https://gitlab.freedesktop.org/drm/xe/kernel/issues/2894">https://gitlab.freedesktop.org/drm/xe/kernel/issues/2894</a>
+  [Intel XE#2953]: <a
+href="https://gitlab.freedesktop.org/drm/xe/kernel/issues/2953">https://gitlab.freedesktop.org/drm/xe/kernel/issues/2953</a>
+  [Intel XE#3009]: <a
+href="https://gitlab.freedesktop.org/drm/xe/kernel/issues/3009">https://gitlab.freedesktop.org/drm/xe/kernel/issues/3009</a>
+  [Intel XE#301]: <a
+href="https://gitlab.freedesktop.org/drm/xe/kernel/issues/301">https://gitlab.freedesktop.org/drm/xe/kernel/issues/301</a>
+  [Intel XE#3012]: <a
+href="https://gitlab.freedesktop.org/drm/xe/kernel/issues/3012">https://gitlab.freedesktop.org/drm/xe/kernel/issues/3012</a>
+  [Intel XE#308]: <a
+href="https://gitlab.freedesktop.org/drm/xe/kernel/issues/308">https://gitlab.freedesktop.org/drm/xe/kernel/issues/308</a>
+  [Intel XE#309]: <a
+href="https://gitlab.freedesktop.org/drm/xe/kernel/issues/309">https://gitlab.freedesktop.org/drm/xe/kernel/issues/309</a>
+  [Intel XE#3098]: <a
+href="https://gitlab.freedesktop.org/drm/xe/kernel/issues/3098">https://gitlab.freedesktop.org/drm/xe/kernel/issues/3098</a>
+  [Intel XE#3113]: <a
+href="https://gitlab.freedesktop.org/drm/xe/kernel/issues/3113">https://gitlab.freedesktop.org/drm/xe/kernel/issues/3113</a>
+  [Intel XE#3124]: <a
+href="https://gitlab.freedesktop.org/drm/xe/kernel/issues/3124">https://gitlab.freedesktop.org/drm/xe/kernel/issues/3124</a>
+  [Intel XE#3374]: <a
+href="https://gitlab.freedesktop.org/drm/xe/kernel/issues/3374">https://gitlab.freedesktop.org/drm/xe/kernel/issues/3374</a>
+  [Intel XE#3414]: <a
+href="https://gitlab.freedesktop.org/drm/xe/kernel/issues/3414">https://gitlab.freedesktop.org/drm/xe/kernel/issues/3414</a>
+  [Intel XE#346]: <a
+href="https://gitlab.freedesktop.org/drm/xe/kernel/issues/346">https://gitlab.freedesktop.org/drm/xe/kernel/issues/346</a>
+  [Intel XE#3544]: <a
+href="https://gitlab.freedesktop.org/drm/xe/kernel/issues/3544">https://gitlab.freedesktop.org/drm/xe/kernel/issues/3544</a>
+  [Intel XE#362]: <a
+href="https://gitlab.freedesktop.org/drm/xe/kernel/issues/362">https://gitlab.freedesktop.org/drm/xe/kernel/issues/362</a>
+  [Intel XE#367]: <a
+href="https://gitlab.freedesktop.org/drm/xe/kernel/issues/367">https://gitlab.freedesktop.org/drm/xe/kernel/issues/367</a>
+  [Intel XE#3718]: <a
+href="https://gitlab.freedesktop.org/drm/xe/kernel/issues/3718">https://gitlab.freedesktop.org/drm/xe/kernel/issues/3718</a>
+  [Intel XE#373]: <a
+href="https://gitlab.freedesktop.org/drm/xe/kernel/issues/373">https://gitlab.freedesktop.org/drm/xe/kernel/issues/373</a>
+  [Intel XE#3862]: <a
+href="https://gitlab.freedesktop.org/drm/xe/kernel/issues/3862">https://gitlab.freedesktop.org/drm/xe/kernel/issues/3862</a>
+  [Intel XE#3868]: <a
+href="https://gitlab.freedesktop.org/drm/xe/kernel/issues/3868">https://gitlab.freedesktop.org/drm/xe/kernel/issues/3868</a>
+  [Intel XE#3876]: <a
+href="https://gitlab.freedesktop.org/drm/xe/kernel/issues/3876">https://gitlab.freedesktop.org/drm/xe/kernel/issues/3876</a>
+  [Intel XE#3908]: <a
+href="https://gitlab.freedesktop.org/drm/xe/kernel/issues/3908">https://gitlab.freedesktop.org/drm/xe/kernel/issues/3908</a>
+  [Intel XE#4090]: <a
+href="https://gitlab.freedesktop.org/drm/xe/kernel/issues/4090">https://gitlab.freedesktop.org/drm/xe/kernel/issues/4090</a>
+  [Intel XE#4173]: <a
+href="https://gitlab.freedesktop.org/drm/xe/kernel/issues/4173">https://gitlab.freedesktop.org/drm/xe/kernel/issues/4173</a>
+  [Intel XE#4212]: <a
+href="https://gitlab.freedesktop.org/drm/xe/kernel/issues/4212">https://gitlab.freedesktop.org/drm/xe/kernel/issues/4212</a>
+  [Intel XE#4345]: <a
+href="https://gitlab.freedesktop.org/drm/xe/kernel/issues/4345">https://gitlab.freedesktop.org/drm/xe/kernel/issues/4345</a>
+  [Intel XE#4459]: <a
+href="https://gitlab.freedesktop.org/drm/xe/kernel/issues/4459">https://gitlab.freedesktop.org/drm/xe/kernel/issues/4459</a>
+  [Intel XE#4494]: <a
+href="https://gitlab.freedesktop.org/drm/xe/kernel/issues/4494">https://gitlab.freedesktop.org/drm/xe/kernel/issues/4494</a>
+  [Intel XE#4543]: <a
+href="https://gitlab.freedesktop.org/drm/xe/kernel/issues/4543">https://gitlab.freedesktop.org/drm/xe/kernel/issues/4543</a>
+  [Intel XE#455]: <a
+href="https://gitlab.freedesktop.org/drm/xe/kernel/issues/455">https://gitlab.freedesktop.org/drm/xe/kernel/issues/455</a>
+  [Intel XE#4596]: <a
+href="https://gitlab.freedesktop.org/drm/xe/kernel/issues/4596">https://gitlab.freedesktop.org/drm/xe/kernel/issues/4596</a>
+  [Intel XE#4733]: <a
+href="https://gitlab.freedesktop.org/drm/xe/kernel/issues/4733">https://gitlab.freedesktop.org/drm/xe/kernel/issues/4733</a>
+  [Intel XE#4837]: <a
+href="https://gitlab.freedesktop.org/drm/xe/kernel/issues/4837">https://gitlab.freedesktop.org/drm/xe/kernel/issues/4837</a>
+  [Intel XE#4847]: <a
+href="https://gitlab.freedesktop.org/drm/xe/kernel/issues/4847">https://gitlab.freedesktop.org/drm/xe/kernel/issues/4847</a>
+  [Intel XE#4915]: <a
+href="https://gitlab.freedesktop.org/drm/xe/kernel/issues/4915">https://gitlab.freedesktop.org/drm/xe/kernel/issues/4915</a>
+  [Intel XE#4943]: <a
+href="https://gitlab.freedesktop.org/drm/xe/kernel/issues/4943">https://gitlab.freedesktop.org/drm/xe/kernel/issues/4943</a>
+  [Intel XE#5390]: <a
+href="https://gitlab.freedesktop.org/drm/xe/kernel/issues/5390">https://gitlab.freedesktop.org/drm/xe/kernel/issues/5390</a>
+  [Intel XE#5561]: <a
+href="https://gitlab.freedesktop.org/drm/xe/kernel/issues/5561">https://gitlab.freedesktop.org/drm/xe/kernel/issues/5561</a>
+  [Intel XE#5565]: <a
+href="https://gitlab.freedesktop.org/drm/xe/kernel/issues/5565">https://gitlab.freedesktop.org/drm/xe/kernel/issues/5565</a>
+  [Intel XE#5575]: <a
+href="https://gitlab.freedesktop.org/drm/xe/kernel/issues/5575">https://gitlab.freedesktop.org/drm/xe/kernel/issues/5575</a>
+  [Intel XE#5580]: <a
+href="https://gitlab.freedesktop.org/drm/xe/kernel/issues/5580">https://gitlab.freedesktop.org/drm/xe/kernel/issues/5580</a>
+  [Intel XE#5594]: <a
+href="https://gitlab.freedesktop.org/drm/xe/kernel/issues/5594">https://gitlab.freedesktop.org/drm/xe/kernel/issues/5594</a>
+  [Intel XE#579]: <a
+href="https://gitlab.freedesktop.org/drm/xe/kernel/issues/579">https://gitlab.freedesktop.org/drm/xe/kernel/issues/579</a>
+  [Intel XE#5793]: <a
+href="https://gitlab.freedesktop.org/drm/xe/kernel/issues/5793">https://gitlab.freedesktop.org/drm/xe/kernel/issues/5793</a>
+  [Intel XE#607]: <a
+href="https://gitlab.freedesktop.org/drm/xe/kernel/issues/607">https://gitlab.freedesktop.org/drm/xe/kernel/issues/607</a>
+  [Intel XE#610]: <a
+href="https://gitlab.freedesktop.org/drm/xe/kernel/issues/610">https://gitlab.freedesktop.org/drm/xe/kernel/issues/610</a>
+  [Intel XE#651]: <a
+href="https://gitlab.freedesktop.org/drm/xe/kernel/issues/651">https://gitlab.freedesktop.org/drm/xe/kernel/issues/651</a>
+  [Intel XE#653]: <a
+href="https://gitlab.freedesktop.org/drm/xe/kernel/issues/653">https://gitlab.freedesktop.org/drm/xe/kernel/issues/653</a>
+  [Intel XE#656]: <a
+href="https://gitlab.freedesktop.org/drm/xe/kernel/issues/656">https://gitlab.freedesktop.org/drm/xe/kernel/issues/656</a>
+  [Intel XE#702]: <a
+href="https://gitlab.freedesktop.org/drm/xe/kernel/issues/702">https://gitlab.freedesktop.org/drm/xe/kernel/issues/702</a>
+  [Intel XE#787]: <a
+href="https://gitlab.freedesktop.org/drm/xe/kernel/issues/787">https://gitlab.freedesktop.org/drm/xe/kernel/issues/787</a>
+  [Intel XE#870]: <a
+href="https://gitlab.freedesktop.org/drm/xe/kernel/issues/870">https://gitlab.freedesktop.org/drm/xe/kernel/issues/870</a>
+  [Intel XE#929]: <a
+href="https://gitlab.freedesktop.org/drm/xe/kernel/issues/929">https://gitlab.freedesktop.org/drm/xe/kernel/issues/929</a>
+  [i915#3804]: <a
+href="https://gitlab.freedesktop.org/drm/i915/kernel/-/issues/3804">https://gitlab.freedesktop.org/drm/i915/kernel/-/issues/3804</a>
+
+
+Build changes
+-------------
+
+  * Linux: xe-3679-13f87d5402106b321a373222c64c5a56a05aa3b6 -&gt; xe-pw-153712v4
+
+  IGT_8524: 8524
+  xe-3679-13f87d5402106b321a373222c64c5a56a05aa3b6: 13f87d5402106b321a373222c64c5a56a05aa3b6
+  xe-pw-153712v4: 153712v4
+
+== Logs ==
+
+For more details see: <a
+href="https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/index.html">https://intel-gfx-ci.01.org/tree/intel-xe/xe-pw-153712v4/index.html</a>
+
+<a
+href="https://lore.kernel.org/all/175706578865.306194.9908617351338554930@1538d3639d33/2-a.bin">[-- Attachment #2: Type: text/html, Size: 52756 bytes --]</a>
+</pre></div></content></entry><entry><author><name>Chen Yufeng</name><email>chenyufeng@iie.ac.cn</email></author><title>[PATCH] usb: cdns3: gadget: Use-after-free during failed initialization and exit of cdnsp gadget</title><updated>2025-09-05T09:49:10Z</updated><link
+href="https://lore.kernel.org/all/20250905094842.1232-1-chenyufeng@iie.ac.cn/"/><id>urn:uuid:9546c26c-b2ea-3f91-e748-6e06bee13c22</id><content
+type="xhtml"><div
+xmlns="http://www.w3.org/1999/xhtml"><pre
+style="white-space:pre-wrap">In the __cdnsp_gadget_init() and cdnsp_gadget_exit() functions, the gadget 
+structure (pdev-&gt;gadget) was freed before its endpoints.
+The endpoints are linked via the ep_list in the gadget structure. 
+Freeing the gadget first leaves dangling pointers in the endpoint list.
+When the endpoints are subsequently freed, this results in a use-after-free.
+
+Fix:
+By separating the usb_del_gadget_udc() operation into distinct &#34;del&#34; and 
+&#34;put&#34; steps, cdnsp_gadget_free_endpoints() can be executed prior to the 
+final release of the gadget structure with usb_put_gadget().
+
+A patch similar to bb9c74a5bd14(&#34;usb: dwc3: gadget: Free gadget structure 
+ only after freeing endpoints&#34;).
+
+Signed-off-by: Chen Yufeng &lt;chenyufeng@iie.ac.cn&gt;
+---
+ drivers/usb/cdns3/cdnsp-gadget.c | 8 ++++++--
+ 1 file <a href="https://lore.kernel.org/all/20250905094842.1232-1-chenyufeng@iie.ac.cn/#related">changed</a>, 6 insertions(+), 2 deletions(-)
+
+<span
+class="head">diff --git a/drivers/usb/cdns3/cdnsp-gadget.c b/drivers/usb/cdns3/cdnsp-gadget.c
+index 55f95f41b3b4..0252560cbc80 100644
+--- a/drivers/usb/cdns3/cdnsp-gadget.c
++++ b/drivers/usb/cdns3/cdnsp-gadget.c
+</span><span
+class="hunk">@@ -1976,7 +1976,10 @@ static int __cdnsp_gadget_init(struct cdns *cdns)
+</span> 	return 0;
+ 
+ del_gadget:
+<span
+class="del">-	usb_del_gadget_udc(&#38;pdev-&gt;gadget);
+</span><span
+class="add">+	usb_del_gadget(&#38;pdev-&gt;gadget);
++	cdnsp_gadget_free_endpoints(pdev);
++	usb_put_gadget(&#38;pdev-&gt;gadget);
++	goto halt_pdev;
+</span> free_endpoints:
+ 	cdnsp_gadget_free_endpoints(pdev);
+ halt_pdev:
+<span
+class="hunk">@@ -1998,8 +2001,9 @@ static void cdnsp_gadget_exit(struct cdns *cdns)
+</span> 	devm_free_irq(pdev-&gt;dev, cdns-&gt;dev_irq, pdev);
+ 	pm_runtime_mark_last_busy(cdns-&gt;dev);
+ 	pm_runtime_put_autosuspend(cdns-&gt;dev);
+<span
+class="del">-	usb_del_gadget_udc(&#38;pdev-&gt;gadget);
+</span><span
+class="add">+	usb_del_gadget(&#38;pdev-&gt;gadget);
+</span> 	cdnsp_gadget_free_endpoints(pdev);
+<span
+class="add">+	usb_put_gadget(&#38;pdev-&gt;gadget);
+</span> 	cdnsp_mem_cleanup(pdev);
+ 	kfree(pdev);
+ 	cdns-&gt;gadget_dev = NULL;
+-- 
+2.34.1
+
+</pre></div></content></entry><entry><author><name>Akira Yokosawa</name><email>akiyks@gmail.com</email></author><title>Re: [PATCH] docs: ja_JP: add guidance for the Fixes: tag in SubmittingPatches</title><updated>2025-09-05T09:48:44Z</updated><link
+href="https://lore.kernel.org/all/cbcc3317-958c-450d-afab-e9a29b1d5add@gmail.com/"/><id>urn:uuid:360665e5-67f3-1703-8f09-184122749bc6</id><thr:in-reply-to
+ref="urn:uuid:e0dfd938-0481-b69f-154c-733ee2c652a7"
+href="https://lore.kernel.org/all/20250905032729.2284883-1-weibu@redadmin.org/"/><content
+type="xhtml"><div
+xmlns="http://www.w3.org/1999/xhtml"><pre
+style="white-space:pre-wrap">Hi Akiyoshi,
+
+On Fri,  5 Sep 2025 12:27:29 +0900, Akiyoshi Kurita wrote:
+<span
+class="q">&gt; The Japanese translation of SubmittingPatches was missing the section
+&gt; describing the use of the &#39;Fixes:&#39; tag. This patch adds the missing
+&gt; description, aligning the translation with commit 8401aa1f5997
+&gt; (&#34;Documentation/SubmittingPatches: describe the Fixes: tag&#34;) in the
+&gt; English version.
+&gt; 
+&gt; Signed-off-by: Akiyoshi Kurita &lt;weibu@redadmin.org&gt;
+&gt; ---
+</span>
+This one made my imbox. Nice!
+
+<span
+class="q">&gt;  .../translations/ja_JP/SubmittingPatches      | 21 +++++++++++++++++++
+&gt;  1 file changed, 21 insertions(+)
+&gt; 
+&gt; diff --git a/Documentation/translations/ja_JP/SubmittingPatches b/Documentation/translations/ja_JP/SubmittingPatches
+&gt; index 5334db471744..28ad83171252 100644
+&gt; --- a/Documentation/translations/ja_JP/SubmittingPatches
+&gt; +++ b/Documentation/translations/ja_JP/SubmittingPatches
+&gt; @@ -132,6 +132,27 @@ <a
+href="http://savannah.nongnu.org/projects/quilt">http://savannah.nongnu.org/projects/quilt</a>
+&gt;         platform_set_drvdata(), but left the variable &#34;dev&#34; unused,
+&gt;         delete it.
+&gt;  
+&gt; +&#29305;&#23450;&#12398;&#12467;&#12511;&#12483;&#12488;&#12398;&#12496;&#12464;&#12434;&#20462;&#27491;&#12377;&#12427;&#12497;&#12483;&#12481;&#12398;&#22580;&#21512;&#65288;&#20363;&#65306;``git bisect``&#12391;&#21839;&#38988;&#12434;&#30330;&#35211;&#12375;&#12383;&#22580;&#21512;&#65289;&#12289;
+&gt; +&#23569;&#12394;&#12367;&#12392;&#12418; SHA-1 ID &#12398;&#26368;&#21021;&#12398; 12 &#25991;&#23383;&#12392; 1 &#34892;&#12398;&#35201;&#32004;&#12434;&#35352;&#36617;&#12375;&#12383;&#12300;Fixes:&#12301;&#12479;&#12464;&#12434;&#20351;&#29992;&#12375;&#12390;&#12367;&#12384;&#12373;&#12356;&#12290;
+&gt; +&#12479;&#12464;&#12434;&#35079;&#25968;&#34892;&#12395;&#20998;&#21106;&#12375;&#12394;&#12356;&#12391;&#12367;&#12384;&#12373;&#12356;&#12290;&#35299;&#26512;&#12473;&#12463;&#12522;&#12503;&#12488;&#12434;&#31777;&#32032;&#21270;&#12377;&#12427;&#12383;&#12417;&#12289;&#12479;&#12464;&#12399;
+&gt; +&#12300;75 &#25991;&#23383;&#12391;&#25240;&#12426;&#36820;&#12377;&#12301;&#12523;&#12540;&#12523;&#12363;&#12425;&#38500;&#22806;&#12373;&#12428;&#12414;&#12377;&#12290;
+&gt; +
+&gt; +&#20363;:
+&gt; +
+&gt; +        Fixes: 54a4f0239f2e (&#34;KVM: MMU: make kvm_mmu_zap_page() return the number of pages it actually freed&#34;)
+&gt; +
+&gt; +&#20197;&#19979;&#12398; ``git config`` &#35373;&#23450;&#12434;&#20351;&#29992;&#12377;&#12427;&#12392;&#12289;``git log`` &#12420; ``git show`` &#12467;&#12510;&#12531;&#12489;&#12391;
+&gt; +&#19978;&#35352;&#24418;&#24335;&#12434;&#20986;&#21147;&#12377;&#12427;&#38555;&#12395;&#12503;&#12522;&#12486;&#12451;&#12501;&#12457;&#12540;&#12510;&#12483;&#12488;&#12434;&#36861;&#21152;&#12391;&#12365;&#12414;&#12377;::
+&gt; +
+&gt; +        [core]
+&gt; +                abbrev = 12
+&gt; +        [pretty]
+&gt; +                fixes = Fixes: %h (\&#34;%s\&#34;)
+&gt; +
+&gt; +&#21628;&#12403;&#20986;&#12375;&#20363;::
+&gt; +
+&gt; +        $ git log -1 --pretty=fixes 54a4f0239f2e
+&gt; +        Fixes: 54a4f0239f2e (&#34;KVM: MMU: make kvm_mmu_zap_page() return the number of pages it actually freed&#34;)
+&gt;  
+&gt;  3) &#12497;&#12483;&#12481;&#12398;&#20998;&#21106;
+&gt;  
+</span>
+So, this doesn&#39;t cover the other hunks in commit 8401aa1f5997.
+Instead, it includes the change made later in commit 5b5bbb8cc51be
+(&#34;docs: process: Add an example for creating a fixes tag&#34;).
+
+Your interpretation of Jon&#39;s desire might be different from that of
+mine, but I think Jon suggested translating up-to-date
+submitting-patches.rst as a whole.
+
+Of course that would be great, but I&#39;m not sure it is a reasonable ask
+here.
+
+I think covering both commits 8401aa1f5997 and 5b5bbb8cc51be might be
+a reasonable middle ground here.
+
+What do you think?
+
+It&#39;s 100% up to you how far you want to do.
+
+Thanks, Akira
+
+</pre></div></content></entry><entry><author><name>Rafael J. Wysocki</name><email>rafael@kernel.org</email></author><title>Re: [PATCH v4 03/10] cpufreq: intel_pstate: Use scope-based cleanup helper</title><updated>2025-09-05T09:48:36Z</updated><link
+href="https://lore.kernel.org/all/CAJZ5v0gN1T5woSF0tO=TbAh+2-sWzxFjWyDbB7wG2TFCOU01iQ@mail.gmail.com/"/><id>urn:uuid:f8e3eca1-a335-1240-ca27-abd840b6ef69</id><thr:in-reply-to
+ref="urn:uuid:4002901b-1402-785a-ac9d-07c20721020a"
+href="https://lore.kernel.org/all/20250903131733.57637-4-zhangzihuan@kylinos.cn/"/><content
+type="xhtml"><div
+xmlns="http://www.w3.org/1999/xhtml"><pre
+style="white-space:pre-wrap">On Wed, Sep 3, 2025 at 3:18&#8239;PM Zihuan Zhang &lt;zhangzihuan@kylinos.cn&gt; wrote:
+<span
+class="q">&gt;
+&gt; Replace the manual cpufreq_cpu_put() with __free(put_cpufreq_policy)
+&gt; annotation for policy references. This reduces the risk of reference
+&gt; counting mistakes and aligns the code with the latest kernel style.
+&gt;
+&gt; No functional change intended.
+&gt;
+&gt; Signed-off-by: Zihuan Zhang &lt;zhangzihuan@kylinos.cn&gt;
+&gt; ---
+&gt;  drivers/cpufreq/intel_pstate.c | 19 ++++++++++++-------
+&gt;  1 file changed, 12 insertions(+), 7 deletions(-)
+&gt;
+&gt; diff --git a/drivers/cpufreq/intel_pstate.c b/drivers/cpufreq/intel_pstate.c
+&gt; index f366d35c5840..925efb1e65be 100644
+&gt; --- a/drivers/cpufreq/intel_pstate.c
+&gt; +++ b/drivers/cpufreq/intel_pstate.c
+&gt; @@ -1209,6 +1209,17 @@ static bool hybrid_clear_max_perf_cpu(void)
+&gt;         return ret;
+&gt;  }
+&gt;
+&gt; +static struct freq_qos_request *intel_pstate_cpufreq_get_req(int cpu)
+&gt; +{
+&gt; +       struct cpufreq_policy *policy __free(put_cpufreq_policy) =
+&gt; +               cpufreq_cpu_get(cpu);
+&gt; +
+&gt; +       if (!policy)
+&gt; +               return NULL;
+&gt; +
+&gt; +       return policy-&gt;driver_data;
+&gt; +}
+&gt; +
+&gt;  static void __intel_pstate_get_hwp_cap(struct cpudata *cpu)
+&gt;  {
+&gt;         u64 cap;
+&gt; @@ -1698,19 +1709,13 @@ static ssize_t store_no_turbo(struct kobject *a, struct kobj_attribute *b,
+&gt;  static void update_qos_request(enum freq_qos_req_type type)
+&gt;  {
+&gt;         struct freq_qos_request *req;
+&gt; -       struct cpufreq_policy *policy;
+&gt;         int i;
+&gt;
+&gt;         for_each_possible_cpu(i) {
+&gt;                 struct cpudata *cpu = all_cpu_data[i];
+&gt;                 unsigned int freq, perf_pct;
+&gt;
+&gt; -               policy = cpufreq_cpu_get(i);
+&gt; -               if (!policy)
+&gt; -                       continue;
+&gt; -
+&gt; -               req = policy-&gt;driver_data;
+&gt; -               cpufreq_cpu_put(policy);
+&gt; +               req = intel_pstate_cpufreq_get_req(i);
+&gt;
+&gt;                 if (!req)
+&gt;                         continue;
+&gt; --
+</span>
+This change would have been fine if the modified code had been
+correct.  Unfortunately, this is not the case because below req is
+passed to freq_qos_update_request() which accesses the policy object
+indirectly through it, so the policy object should be
+reference-counted until freq_qos_update_request() completes.
+
+I will send a fix for this shortly (it is better to fix it before
+rearranging the code to allow the fix to be backported more easily)
+along with my version of the change in question.
+
+Thanks!
+</pre></div></content></entry><entry><author><name>Jonathan Cameron</name><email>jonathan.cameron@huawei.com</email></author><title>Re: [PATCH v4 03/10] cpufreq: intel_pstate: Use scope-based cleanup helper</title><updated>2025-09-05T09:47:48Z</updated><link
+href="https://lore.kernel.org/all/20250905104743.00004177@huawei.com/"/><id>urn:uuid:74ae1afd-e821-a5ba-efae-7bf2a807c0ae</id><thr:in-reply-to
+ref="urn:uuid:4002901b-1402-785a-ac9d-07c20721020a"
+href="https://lore.kernel.org/all/20250903131733.57637-4-zhangzihuan@kylinos.cn/"/><content
+type="xhtml"><div
+xmlns="http://www.w3.org/1999/xhtml"><pre
+style="white-space:pre-wrap">On Wed,  3 Sep 2025 21:17:26 +0800
+Zihuan Zhang &lt;zhangzihuan@kylinos.cn&gt; wrote:
+
+<span
+class="q">&gt; Replace the manual cpufreq_cpu_put() with __free(put_cpufreq_policy)
+&gt; annotation for policy references. This reduces the risk of reference
+&gt; counting mistakes and aligns the code with the latest kernel style.
+&gt; 
+&gt; No functional change intended.
+&gt; 
+&gt; Signed-off-by: Zihuan Zhang &lt;zhangzihuan@kylinos.cn&gt;
+</span>
+One trivial comment inline.  This LGTM
+Reviewed-by: Jonathan Cameron &lt;jonathan.cameron@huawei.com&gt;
+
+<span
+class="q">&gt; ---
+&gt;  drivers/cpufreq/intel_pstate.c | 19 ++++++++++++-------
+&gt;  1 file changed, 12 insertions(+), 7 deletions(-)
+&gt; 
+&gt; diff --git a/drivers/cpufreq/intel_pstate.c b/drivers/cpufreq/intel_pstate.c
+&gt; index f366d35c5840..925efb1e65be 100644
+&gt; --- a/drivers/cpufreq/intel_pstate.c
+&gt; +++ b/drivers/cpufreq/intel_pstate.c
+&gt; @@ -1209,6 +1209,17 @@ static bool hybrid_clear_max_perf_cpu(void)
+&gt;  	return ret;
+&gt;  }
+&gt;  
+&gt; +static struct freq_qos_request *intel_pstate_cpufreq_get_req(int cpu)
+&gt; +{
+&gt; +	struct cpufreq_policy *policy __free(put_cpufreq_policy) =
+&gt; +		cpufreq_cpu_get(cpu);
+&gt; +
+&gt; +	if (!policy)
+&gt; +		return NULL;
+&gt; +
+&gt; +	return policy-&gt;driver_data;
+&gt; +}
+&gt; +
+&gt;  static void __intel_pstate_get_hwp_cap(struct cpudata *cpu)
+&gt;  {
+&gt;  	u64 cap;
+&gt; @@ -1698,19 +1709,13 @@ static ssize_t store_no_turbo(struct kobject *a, struct kobj_attribute *b,
+&gt;  static void update_qos_request(enum freq_qos_req_type type)
+&gt;  {
+&gt;  	struct freq_qos_request *req;
+&gt; -	struct cpufreq_policy *policy;
+&gt;  	int i;
+&gt;  
+&gt;  	for_each_possible_cpu(i) {
+&gt;  		struct cpudata *cpu = all_cpu_data[i];
+&gt;  		unsigned int freq, perf_pct;
+&gt;  
+&gt; -		policy = cpufreq_cpu_get(i);
+&gt; -		if (!policy)
+&gt; -			continue;
+&gt; -
+&gt; -		req = policy-&gt;driver_data;
+&gt; -		cpufreq_cpu_put(policy);
+&gt; +		req = intel_pstate_cpufreq_get_req(i);
+&gt;  
+</span>
+I&#39;d drop this blank line as it&#39;ll keep the setting or req and checking it
+closely coupled.  Previously the put inbetween stopped that but now
+we can improve the formatting!
+
+<span
+class="q">&gt;  		if (!req)
+&gt;  			continue;
+</span>
+</pre></div></content></entry><entry><author><name>Alexander Gordeev</name><email>agordeev@linux.ibm.com</email></author><title>Re: [PATCH 0/7] Nesting support for lazy MMU mode</title><updated>2025-09-05T09:47:37Z</updated><link
+href="https://lore.kernel.org/all/9fd076c7-f163-4b92-8201-d8a259a338c1-agordeev@linux.ibm.com/"/><id>urn:uuid:9ca2eb6a-0e8c-9614-e10c-872982f13a38</id><thr:in-reply-to
+ref="urn:uuid:2a2f3bd5-5cee-be95-79da-a775f01dd892"
+href="https://lore.kernel.org/all/20250904125736.3918646-1-kevin.brodsky@arm.com/"/><content
+type="xhtml"><div
+xmlns="http://www.w3.org/1999/xhtml"><pre
+style="white-space:pre-wrap">On Thu, Sep 04, 2025 at 01:57:29PM +0100, Kevin Brodsky wrote:
+
+Hi Kevin,
+
+<span
+class="q">&gt; When the lazy MMU mode was introduced eons ago, it wasn&#39;t made clear
+&gt; whether such a sequence was legal:
+&gt; 
+&gt; 	arch_enter_lazy_mmu_mode()
+&gt; 	...
+&gt; 		arch_enter_lazy_mmu_mode()
+&gt; 		...
+&gt; 		arch_leave_lazy_mmu_mode()
+&gt; 	...
+&gt; 	arch_leave_lazy_mmu_mode()
+</span>
+I did not take too deep - sorry if you already answered this.
+Quick question - whether a concern Ryan expressed is addressed
+in general case?
+
+<a
+href="https://lore.kernel.org/all/3cad01ea-b704-4156-807e-7a83643917a8@arm.com/">https://lore.kernel.org/all/3cad01ea-b704-4156-807e-7a83643917a8@arm.com/</a>
+
+	enter_lazy_mmu
+		for_each_pte {
+			read/modify-write pte
+
+			alloc_page
+				enter_lazy_mmu
+					make page valid
+				exit_lazy_mmu
+
+			write_to_page
+		}
+	exit_lazy_mmu
+
+&lt;quote&gt;
+This example only works because lazy_mmu doesn&#39;t support nesting. The &#34;make page
+valid&#34; operation is completed by the time of the inner exit_lazy_mmu so that the
+page can be accessed in write_to_page. If nesting was supported, the inner
+exit_lazy_mmu would become a nop and write_to_page would explode.
+&lt;/quote&gt;
+
+...
+
+Thanks!
+</pre></div></content></entry><entry><author><name>Jonathan Cameron</name><email>jonathan.cameron@huawei.com</email></author><title>Re: [PATCH v4 02/10] ACPI: processor: thermal: Use scope-based cleanup helper</title><updated>2025-09-05T09:45:26Z</updated><link
+href="https://lore.kernel.org/all/20250905104521.00003944@huawei.com/"/><id>urn:uuid:62fb506f-175d-ff8a-b271-10eb19a644ed</id><thr:in-reply-to
+ref="urn:uuid:ad34e0e9-14eb-f407-c066-8690facf00c0"
+href="https://lore.kernel.org/all/CAJZ5v0j5O4Q72P-OLiR4RK4g8E5joi_gu_O4HZymh9hJvy551g@mail.gmail.com/"/><content
+type="xhtml"><div
+xmlns="http://www.w3.org/1999/xhtml"><pre
+style="white-space:pre-wrap">On Wed, 3 Sep 2025 15:23:31 +0200
+&#34;Rafael J. Wysocki&#34; &lt;rafael@kernel.org&gt; wrote:
+
+<span
+class="q">&gt; On Wed, Sep 3, 2025 at 3:18&#8239;PM Zihuan Zhang &lt;zhangzihuan@kylinos.cn&gt; wrote:
+&gt; &gt;
+&gt; &gt; Replace the manual cpufreq_cpu_put() with __free(put_cpufreq_policy)
+&gt; &gt; annotation for policy references. This reduces the risk of reference
+&gt; &gt; counting mistakes and aligns the code with the latest kernel style.
+&gt; &gt;
+&gt; &gt; No functional change intended.
+&gt; &gt;
+&gt; &gt; Signed-off-by: Zihuan Zhang &lt;zhangzihuan@kylinos.cn&gt;
+&gt; &gt; ---
+&gt; &gt;  drivers/acpi/processor_thermal.c | 37 ++++++++++++++++++--------------
+&gt; &gt;  1 file changed, 21 insertions(+), 16 deletions(-)
+&gt; &gt;
+&gt; &gt; diff --git a/drivers/acpi/processor_thermal.c b/drivers/acpi/processor_thermal.c
+&gt; &gt; index 1219adb11ab9..5043f17d27b7 100644
+&gt; &gt; --- a/drivers/acpi/processor_thermal.c
+&gt; &gt; +++ b/drivers/acpi/processor_thermal.c
+&gt; &gt; @@ -62,19 +62,14 @@ static int phys_package_first_cpu(int cpu)
+&gt; &gt;         return 0;
+&gt; &gt;  }
+&gt; &gt;
+&gt; &gt; -static int cpu_has_cpufreq(unsigned int cpu)
+&gt; &gt; +static bool cpu_has_cpufreq(unsigned int cpu)
+&gt; &gt;  {
+&gt; &gt; -       struct cpufreq_policy *policy;
+&gt; &gt; +       struct cpufreq_policy *policy __free(put_cpufreq_policy) = cpufreq_cpu_get(cpu);
+</span>
+I&#39;d put the order back as it was.  See docs in cleanup.h, it is fine to
+declare local variables inline if they are being use with __free()
+
+That way if the simple check on acpi_process_cpu_freq_init fails no
+get needs to occur.
+
+So something like
+
+static bool cpu_has_cpufreq(unsigned int cpu)
+{
+	if (!acpi_processor_cpufreq_init)
+                 return 0;
+
+	struct cpufreq_policy *policy __free(put_cpufreq_policy) = cpufreq_cpu_get(cpu);
+
+	return policy != NULL; //Personally I find !! on a pointer a bit weird :)
+}
+
+<span
+class="q">&gt; &gt;
+&gt; &gt;         if (!acpi_processor_cpufreq_init)
+&gt; &gt;                 return 0;
+&gt; &gt;
+&gt; &gt; -       policy = cpufreq_cpu_get(cpu);
+&gt; &gt; -       if (policy) {
+&gt; &gt; -               cpufreq_cpu_put(policy);
+&gt; &gt; -               return 1;
+&gt; &gt; -       }
+&gt; &gt; -       return 0;
+&gt; &gt; +       return !!policy;
+&gt; &gt;  }
+&gt; &gt;
+&gt; &gt;  static int cpufreq_get_max_state(unsigned int cpu)
+&gt; &gt; @@ -93,9 +88,23 @@ static int cpufreq_get_cur_state(unsigned int cpu)
+&gt; &gt;         return reduction_step(cpu);
+&gt; &gt;  }
+&gt; &gt;
+&gt; &gt; +static long long cpufreq_get_max_freq(unsigned int cpu)
+&gt; &gt; +{
+&gt; &gt; +       long long max_freq;
+&gt; &gt; +       struct cpufreq_policy *policy __free(put_cpufreq_policy) =
+&gt; &gt; +               cpufreq_cpu_get(cpu);
+</span>
+Format consistently.  If you are going to wrap to 80 chars here
+then do it for the cpu_has_cpufreq() line that is identical to this.
+
+<span
+class="q">&gt; &gt; +
+&gt; &gt; +       if (!policy)
+&gt; &gt; +               return -EINVAL;
+&gt; &gt; +
+&gt; &gt; +       max_freq = (policy-&gt;cpuinfo.max_freq *
+&gt; &gt; +               (100 - reduction_step(cpu) * cpufreq_thermal_reduction_pctg)) / 100;
+&gt; &gt; +
+&gt; &gt; +       return max_freq;
+&gt; &gt; +}
+&gt; &gt; +
+&gt; &gt;  static int cpufreq_set_cur_state(unsigned int cpu, int state)
+&gt; &gt;  {
+&gt; &gt; -       struct cpufreq_policy *policy;
+&gt; &gt;         struct acpi_processor *pr;
+&gt; &gt;         unsigned long max_freq;
+&gt; &gt;         int i, ret;
+&gt; &gt; @@ -120,14 +129,10 @@ static int cpufreq_set_cur_state(unsigned int cpu, int state)
+&gt; &gt;                 if (unlikely(!freq_qos_request_active(&#38;pr-&gt;thermal_req)))
+&gt; &gt;                         continue;
+&gt; &gt;
+&gt; &gt; -               policy = cpufreq_cpu_get(i);
+&gt; &gt; -               if (!policy)
+&gt; &gt; -                       return -EINVAL;
+&gt; &gt; -
+&gt; &gt; -               max_freq = (policy-&gt;cpuinfo.max_freq *
+&gt; &gt; -                           (100 - reduction_step(i) * cpufreq_thermal_reduction_pctg)) / 100;
+&gt; &gt; +               max_freq = cpufreq_get_max_freq(cpu);
+&gt; &gt;
+&gt; &gt; -               cpufreq_cpu_put(policy);
+&gt; &gt; +               if (max_freq == -EINVAL)
+&gt; &gt; +                       return -EINVAL;  
+&gt; 
+&gt; Please also move the code below to the new function so it does not
+&gt; need to return a value.
+&gt; 
+&gt; &gt;
+&gt; &gt;                 ret = freq_qos_update_request(&#38;pr-&gt;thermal_req, max_freq);
+&gt; &gt;                 if (ret &lt; 0) {
+&gt; &gt; --  
+&gt; 
+</span>
+</pre></div></content></entry><entry><author><name>kernel test robot</name><email>lkp@intel.com</email></author><title>Re: [PATCH v1 1/2] This patch adds a new device tree binding documentation.</title><updated>2025-09-05T09:44:57Z</updated><link
+href="https://lore.kernel.org/all/202509051737.5JZH3tvV-lkp@intel.com/"/><id>urn:uuid:335b891a-c450-c99a-964f-d938a19f72b1</id><content
+type="xhtml"><div
+xmlns="http://www.w3.org/1999/xhtml"><pre
+style="white-space:pre-wrap">:::::: 
+:::::: Manual check reason: &#34;dtcheck: binding changes may go via different trees&#34;
+:::::: 
+
+BCC: lkp@intel.com
+CC: oe-kbuild-all@lists.linux.dev
+In-Reply-To: &lt;20250903123825.1721443-2-syyang@lontium.com&gt;
+References: &lt;20250903123825.1721443-2-syyang@lontium.com&gt;
+TO: syyang &lt;syyang@lontium.com&gt;
+TO: robh@kernel.org
+TO: krzk+dt@kernel.org
+TO: conor+dt@kernel.org
+TO: andrzej.hajda@intel.com
+TO: neil.armstrong@linaro.org
+TO: rfoss@kernel.org
+CC: Laurent.pinchart@ideasonboard.com
+CC: jonas@kwiboo.se
+CC: jernej.skrabec@gmail.com
+CC: devicetree@vger.kernel.org
+CC: dri-devel@lists.freedesktop.org
+CC: linux-kernel@vger.kernel.org
+CC: yangsunyun1993@gmail.com
+CC: syyang &lt;syyang@lontium.com&gt;
+
+Hi syyang,
+
+kernel test robot noticed the following build warnings:
+
+[auto build test WARNING on robh/for-next]
+[also build test WARNING on drm-misc/drm-misc-next drm-tip/drm-tip linus/master v6.17-rc4 next-20250904]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use &#39;--base&#39; as documented in
+<a
+href="https://git-scm.com/docs/git-format-patch#_base_tree_information">https://git-scm.com/docs/git-format-patch#_base_tree_information</a>]
+
+url:    <a
+href="https://github.com/intel-lab-lkp/linux/commits/syyang/This-patch-adds-a-new-device-tree-binding-documentation/20250904-142755">https://github.com/intel-lab-lkp/linux/commits/syyang/This-patch-adds-a-new-device-tree-binding-documentation/20250904-142755</a>
+base:   <a
+href="https://git.kernel.org/pub/scm/linux/kernel/git/robh/linux.git">https://git.kernel.org/pub/scm/linux/kernel/git/robh/linux.git</a> for-next
+patch link:    <a
+href="https://lore.kernel.org/r/20250903123825.1721443-2-syyang%40lontium.com">https://lore.kernel.org/r/20250903123825.1721443-2-syyang%40lontium.com</a>
+patch subject: [PATCH v1 1/2] This patch adds a new device tree binding documentation.
+:::::: branch date: 27 hours ago
+:::::: commit date: 27 hours ago
+config: arm64-randconfig-051-20250905 (<a
+href="https://download.01.org/0day-ci/archive/20250905/202509051737.5JZH3tvV-lkp@intel.com/config">https://download.01.org/0day-ci/archive/20250905/202509051737.5JZH3tvV-lkp@intel.com/config</a>)
+compiler: clang version 22.0.0git (<a
+href="https://github.com/llvm/llvm-project">https://github.com/llvm/llvm-project</a> 2e122990391b2ba062e6308a12cfedf7206270ba)
+dtschema version: 2025.8
+reproduce (this is a W=1 build): (<a
+href="https://download.01.org/0day-ci/archive/20250905/202509051737.5JZH3tvV-lkp@intel.com/reproduce">https://download.01.org/0day-ci/archive/20250905/202509051737.5JZH3tvV-lkp@intel.com/reproduce</a>)
+
+If you fix the issue in a separate patch/commit (i.e. not just a new version of
+the same patch/commit), kindly add following tags
+| Reported-by: kernel test robot &lt;lkp@intel.com&gt;
+| Closes: <a
+href="https://lore.kernel.org/r/202509051737.5JZH3tvV-lkp@intel.com/">https://lore.kernel.org/r/202509051737.5JZH3tvV-lkp@intel.com/</a>
+
+dtcheck warnings: (new ones prefixed by &gt;&gt;)
+   arch/arm64/boot/dts/qcom/sc7280.dtsi:4817.26-4890.6: Warning (avoid_unnecessary_addr_size): /soc@0/display-subsystem@ae00000/dsi@ae94000: unnecessary #address-cells/#size-cells without &#34;ranges&#34;, &#34;dma-ranges&#34; or child &#34;reg&#34; or &#34;ranges&#34; property
+   arch/arm64/boot/dts/qcom/sc7280.dtsi:4085.10-4095.6: Warning (graph_child_address): /soc@0/eud@88e0000/ports: graph node has single child node &#39;port@0&#39;, #address-cells/#size-cells are not necessary
+<span
+class="q">&gt;&gt; arch/arm64/boot/dts/qcom/qcs6490-rb3gen2.dtb: /soc@0/geniqup@9c0000/i2c@980000/hdmi-bridge@2b: failed to match any schema with compatible: [&#39;lontium,lt9611uxc&#39;]
+</span>   arch/arm64/boot/dts/qcom/qcs6490-rb3gen2.dtb: pmic@2 (qcom,pm8350c): pwm:nvmem: [[355, 356]] is too short
+   	from schema $id: <a
+href="http://devicetree.org/schemas/mfd/qcom,spmi-pmic.yaml">http://devicetree.org/schemas/mfd/qcom,spmi-pmic.yaml</a>#
+   arch/arm64/boot/dts/qcom/qcs6490-rb3gen2.dtb: pwm (qcom,pm8350c-pwm): nvmem: [[355, 356]] is too short
+   	from schema $id: <a
+href="http://devicetree.org/schemas/leds/leds-qcom-lpg.yaml">http://devicetree.org/schemas/leds/leds-qcom-lpg.yaml</a>#
+--
+   arch/arm64/boot/dts/qcom/qcm2290.dtsi:1834.27-1907.6: Warning (avoid_unnecessary_addr_size): /soc@0/display-subsystem@5e00000/dsi@5e94000: unnecessary #address-cells/#size-cells without &#34;ranges&#34;, &#34;dma-ranges&#34; or child &#34;reg&#34; or &#34;ranges&#34; property
+   arch/arm64/boot/dts/qcom/qcm2290.dtsi:1792.11-1802.7: Warning (graph_child_address): /soc@0/display-subsystem@5e00000/display-controller@5e01000/ports: graph node has single child node &#39;port@0&#39;, #address-cells/#size-cells are not necessary
+   arch/arm64/boot/dts/qcom/qrb2210-rb1.dtb: /soc@0/camss@5c6e000: failed to match any schema with compatible: [&#39;qcom,qcm2290-camss&#39;]
+<span
+class="q">&gt;&gt; arch/arm64/boot/dts/qcom/qrb2210-rb1.dtb: /i2c/hdmi-bridge@2b: failed to match any schema with compatible: [&#39;lontium,lt9611uxc&#39;]
+</span>--
+   arch/arm64/boot/dts/qcom/sm6115.dtsi:1950.27-2021.6: Warning (avoid_unnecessary_addr_size): /soc@0/display-subsystem@5e00000/dsi@5e94000: unnecessary #address-cells/#size-cells without &#34;ranges&#34;, &#34;dma-ranges&#34; or child &#34;reg&#34; or &#34;ranges&#34; property
+   arch/arm64/boot/dts/qcom/sm6115.dtsi:1908.11-1918.7: Warning (graph_child_address): /soc@0/display-subsystem@5e00000/display-controller@5e01000/ports: graph node has single child node &#39;port@0&#39;, #address-cells/#size-cells are not necessary
+<span
+class="q">&gt;&gt; arch/arm64/boot/dts/qcom/qrb4210-rb2.dtb: /i2c/hdmi-bridge@2b: failed to match any schema with compatible: [&#39;lontium,lt9611uxc&#39;]
+</span>--
+   arch/arm64/boot/dts/qcom/sm8250.dtsi:2166.4-2169.30: Warning (interrupt_map): /soc@0/pcie@1c00000:interrupt-map: Missing property &#39;#address-cells&#39; in node /soc@0/interrupt-controller@17a00000, using 0 as fallback
+   arch/arm64/boot/dts/qcom/sm8250.dtsi:2166.4-2169.30: Warning (interrupt_map): /soc@0/pcie@1c00000:interrupt-map: Missing property &#39;#address-cells&#39; in node /soc@0/interrupt-controller@17a00000, using 0 as fallback
+   arch/arm64/boot/dts/qcom/sm8250.dtsi:2288.4-2291.30: Warning (interrupt_map): /soc@0/pcie@1c08000:interrupt-map: Missing property &#39;#address-cells&#39; in node /soc@0/interrupt-controller@17a00000, using 0 as fallback
+   arch/arm64/boot/dts/qcom/sm8250.dtsi:2288.4-2291.30: Warning (interrupt_map): /soc@0/pcie@1c08000:interrupt-map: Missing property &#39;#address-cells&#39; in node /soc@0/interrupt-controller@17a00000, using 0 as fallback
+   arch/arm64/boot/dts/qcom/sm8250.dtsi:2288.4-2291.30: Warning (interrupt_map): /soc@0/pcie@1c08000:interrupt-map: Missing property &#39;#address-cells&#39; in node /soc@0/interrupt-controller@17a00000, using 0 as fallback
+   arch/arm64/boot/dts/qcom/sm8250.dtsi:2288.4-2291.30: Warning (interrupt_map): /soc@0/pcie@1c08000:interrupt-map: Missing property &#39;#address-cells&#39; in node /soc@0/interrupt-controller@17a00000, using 0 as fallback
+   arch/arm64/boot/dts/qcom/sm8250.dtsi:2415.4-2418.30: Warning (interrupt_map): /soc@0/pcie@1c10000:interrupt-map: Missing property &#39;#address-cells&#39; in node /soc@0/interrupt-controller@17a00000, using 0 as fallback
+   arch/arm64/boot/dts/qcom/sm8250.dtsi:2415.4-2418.30: Warning (interrupt_map): /soc@0/pcie@1c10000:interrupt-map: Missing property &#39;#address-cells&#39; in node /soc@0/interrupt-controller@17a00000, using 0 as fallback
+   arch/arm64/boot/dts/qcom/sm8250.dtsi:2415.4-2418.30: Warning (interrupt_map): /soc@0/pcie@1c10000:interrupt-map: Missing property &#39;#address-cells&#39; in node /soc@0/interrupt-controller@17a00000, using 0 as fallback
+   arch/arm64/boot/dts/qcom/sm8250.dtsi:2415.4-2418.30: Warning (interrupt_map): /soc@0/pcie@1c10000:interrupt-map: Missing property &#39;#address-cells&#39; in node /soc@0/interrupt-controller@17a00000, using 0 as fallback
+<span
+class="q">&gt;&gt; arch/arm64/boot/dts/qcom/qrb5165-rb5.dtb: /soc@0/geniqup@9c0000/i2c@994000/hdmi-bridge@2b: failed to match any schema with compatible: [&#39;lontium,lt9611uxc&#39;]
+</span>--
+   arch/arm64/boot/dts/qcom/sdm845.dtsi:4723.27-4776.6: Warning (avoid_unnecessary_addr_size): /soc@0/display-subsystem@ae00000/dsi@ae94000: unnecessary #address-cells/#size-cells without &#34;ranges&#34;, &#34;dma-ranges&#34; or child &#34;reg&#34; or &#34;ranges&#34; property
+   arch/arm64/boot/dts/qcom/sdm845.dtsi:4797.27-4850.6: Warning (avoid_unnecessary_addr_size): /soc@0/display-subsystem@ae00000/dsi@ae96000: unnecessary #address-cells/#size-cells without &#34;ranges&#34;, &#34;dma-ranges&#34; or child &#34;reg&#34; or &#34;ranges&#34; property
+   arch/arm64/boot/dts/qcom/sdm845.dtsi:1222.44-1225.6: Warning (unique_unit_address_if_enabled): /soc@0/qfprom@784000/hstx-trim-primary@1eb: duplicate unit-address (also used in node /soc@0/qfprom@784000/hstx-trim-secondary@1eb)
+<span
+class="q">&gt;&gt; arch/arm64/boot/dts/qcom/sdm845-db845c.dtb: /soc@0/geniqup@ac0000/i2c@a88000/hdmi-bridge@3b: failed to match any schema with compatible: [&#39;lontium,lt9611&#39;]
+</span>--
+   arch/arm64/boot/dts/qcom/pm8150b.dtsi:164.9-179.4: Warning (avoid_unnecessary_addr_size): /soc@0/spmi@c440000/pmic@3: unnecessary #address-cells/#size-cells without &#34;ranges&#34;, &#34;dma-ranges&#34; or child &#34;reg&#34; or &#34;ranges&#34; property
+   arch/arm64/boot/dts/qcom/sm8150.dtsi:1869.4-1872.30: Warning (interrupt_map): /soc@0/pcie@1c00000:interrupt-map: Missing property &#39;#address-cells&#39; in node /soc@0/interrupt-controller@17a00000, using 0 as fallback
+   arch/arm64/boot/dts/qcom/sm8150.dtsi:1869.4-1872.30: Warning (interrupt_map): /soc@0/pcie@1c00000:interrupt-map: Missing property &#39;#address-cells&#39; in node /soc@0/interrupt-controller@17a00000, using 0 as fallback
+   arch/arm64/boot/dts/qcom/sm8150.dtsi:1869.4-1872.30: Warning (interrupt_map): /soc@0/pcie@1c00000:interrupt-map: Missing property &#39;#address-cells&#39; in node /soc@0/interrupt-controller@17a00000, using 0 as fallback
+   arch/arm64/boot/dts/qcom/sm8150.dtsi:1869.4-1872.30: Warning (interrupt_map): /soc@0/pcie@1c00000:interrupt-map: Missing property &#39;#address-cells&#39; in node /soc@0/interrupt-controller@17a00000, using 0 as fallback
+   arch/arm64/boot/dts/qcom/sm8150.dtsi:1984.4-1987.30: Warning (interrupt_map): /soc@0/pcie@1c08000:interrupt-map: Missing property &#39;#address-cells&#39; in node /soc@0/interrupt-controller@17a00000, using 0 as fallback
+   arch/arm64/boot/dts/qcom/sm8150.dtsi:1984.4-1987.30: Warning (interrupt_map): /soc@0/pcie@1c08000:interrupt-map: Missing property &#39;#address-cells&#39; in node /soc@0/interrupt-controller@17a00000, using 0 as fallback
+   arch/arm64/boot/dts/qcom/sm8150.dtsi:1984.4-1987.30: Warning (interrupt_map): /soc@0/pcie@1c08000:interrupt-map: Missing property &#39;#address-cells&#39; in node /soc@0/interrupt-controller@17a00000, using 0 as fallback
+   arch/arm64/boot/dts/qcom/sm8150.dtsi:1984.4-1987.30: Warning (interrupt_map): /soc@0/pcie@1c08000:interrupt-map: Missing property &#39;#address-cells&#39; in node /soc@0/interrupt-controller@17a00000, using 0 as fallback
+<span
+class="q">&gt;&gt; arch/arm64/boot/dts/qcom/sm8150-hdk.dtb: /soc@0/geniqup@ac0000/i2c@a84000/hdmi-bridge@3b: failed to match any schema with compatible: [&#39;lontium,lt9611&#39;]
+</span>--
+   arch/arm64/boot/dts/qcom/sm8350.dtsi:3045.27-3123.6: Warning (avoid_unnecessary_addr_size): /soc@0/display-subsystem@ae00000/dsi@ae96000: unnecessary #address-cells/#size-cells without &#34;ranges&#34;, &#34;dma-ranges&#34; or child &#34;reg&#34; or &#34;ranges&#34; property
+   arch/arm64/boot/dts/qcom/sm8350.dtsi:1554.4-1557.30: Warning (interrupt_map): /soc@0/pcie@1c00000:interrupt-map: Missing property &#39;#address-cells&#39; in node /soc@0/interrupt-controller@17a00000, using 0 as fallback
+   arch/arm64/boot/dts/qcom/sm8350.dtsi:1554.4-1557.30: Warning (interrupt_map): /soc@0/pcie@1c00000:interrupt-map: Missing property &#39;#address-cells&#39; in node /soc@0/interrupt-controller@17a00000, using 0 as fallback
+   arch/arm64/boot/dts/qcom/sm8350.dtsi:1554.4-1557.30: Warning (interrupt_map): /soc@0/pcie@1c00000:interrupt-map: Missing property &#39;#address-cells&#39; in node /soc@0/interrupt-controller@17a00000, using 0 as fallback
+   arch/arm64/boot/dts/qcom/sm8350.dtsi:1554.4-1557.30: Warning (interrupt_map): /soc@0/pcie@1c00000:interrupt-map: Missing property &#39;#address-cells&#39; in node /soc@0/interrupt-controller@17a00000, using 0 as fallback
+   arch/arm64/boot/dts/qcom/sm8350.dtsi:1665.4-1668.30: Warning (interrupt_map): /soc@0/pcie@1c08000:interrupt-map: Missing property &#39;#address-cells&#39; in node /soc@0/interrupt-controller@17a00000, using 0 as fallback
+   arch/arm64/boot/dts/qcom/sm8350.dtsi:1665.4-1668.30: Warning (interrupt_map): /soc@0/pcie@1c08000:interrupt-map: Missing property &#39;#address-cells&#39; in node /soc@0/interrupt-controller@17a00000, using 0 as fallback
+   arch/arm64/boot/dts/qcom/sm8350.dtsi:1665.4-1668.30: Warning (interrupt_map): /soc@0/pcie@1c08000:interrupt-map: Missing property &#39;#address-cells&#39; in node /soc@0/interrupt-controller@17a00000, using 0 as fallback
+   arch/arm64/boot/dts/qcom/sm8350.dtsi:1665.4-1668.30: Warning (interrupt_map): /soc@0/pcie@1c08000:interrupt-map: Missing property &#39;#address-cells&#39; in node /soc@0/interrupt-controller@17a00000, using 0 as fallback
+<span
+class="q">&gt;&gt; arch/arm64/boot/dts/qcom/sm8350-hdk.dtb: /soc@0/geniqup@8c0000/i2c@884000/hdmi-bridge@2b: failed to match any schema with compatible: [&#39;lontium,lt9611uxc&#39;]
+</span>--
+   arch/arm64/boot/dts/qcom/sm8450.dtsi:3501.27-3574.6: Warning (avoid_unnecessary_addr_size): /soc@0/display-subsystem@ae00000/dsi@ae94000: unnecessary #address-cells/#size-cells without &#34;ranges&#34;, &#34;dma-ranges&#34; or child &#34;reg&#34; or &#34;ranges&#34; property
+   arch/arm64/boot/dts/qcom/sm8450.dtsi:3595.27-3649.6: Warning (avoid_unnecessary_addr_size): /soc@0/display-subsystem@ae00000/dsi@ae96000: unnecessary #address-cells/#size-cells without &#34;ranges&#34;, &#34;dma-ranges&#34; or child &#34;reg&#34; or &#34;ranges&#34; property
+<span
+class="q">&gt;&gt; arch/arm64/boot/dts/qcom/sm8450-hdk.dtb: /soc@0/geniqup@ac0000/i2c@a84000/hdmi-bridge@2b: failed to match any schema with compatible: [&#39;lontium,lt9611uxc&#39;]
+</span>   arch/arm64/boot/dts/qcom/sm8450-hdk.dtb: clock-controller@aaf0000 (qcom,sm8450-videocc): power-domains: [[106, 6]] is too short
+   	from schema $id: <a
+href="http://devicetree.org/schemas/clock/qcom,sm8450-videocc.yaml">http://devicetree.org/schemas/clock/qcom,sm8450-videocc.yaml</a>#
+   arch/arm64/boot/dts/qcom/sm8450-hdk.dtb: clock-controller@aaf0000 (qcom,sm8450-videocc): required-opps: [[55]] is too short
+   	from schema $id: <a
+href="http://devicetree.org/schemas/clock/qcom,sm8450-videocc.yaml">http://devicetree.org/schemas/clock/qcom,sm8450-videocc.yaml</a>#
+   arch/arm64/boot/dts/qcom/sm8450-hdk.dtb: clock-controller@aaf0000 (qcom,sm8450-videocc): Unevaluated properties are not allowed (&#39;power-domains&#39;, &#39;required-opps&#39; were unexpected)
+   	from schema $id: <a
+href="http://devicetree.org/schemas/clock/qcom,sm8450-videocc.yaml">http://devicetree.org/schemas/clock/qcom,sm8450-videocc.yaml</a>#
+   arch/arm64/boot/dts/qcom/sm8450-hdk.dtb: clock-controller@ade0000 (qcom,sm8450-camcc): power-domains: [[106, 6]] is too short
+   	from schema $id: <a
+href="http://devicetree.org/schemas/clock/qcom,sm8450-camcc.yaml">http://devicetree.org/schemas/clock/qcom,sm8450-camcc.yaml</a>#
+   arch/arm64/boot/dts/qcom/sm8450-hdk.dtb: clock-controller@ade0000 (qcom,sm8450-camcc): required-opps: [[55]] is too short
+   	from schema $id: <a
+href="http://devicetree.org/schemas/clock/qcom,sm8450-camcc.yaml">http://devicetree.org/schemas/clock/qcom,sm8450-camcc.yaml</a>#
+--
+   arch/arm64/boot/dts/qcom/sm8550.dtsi:3824.27-3898.6: Warning (avoid_unnecessary_addr_size): /soc@0/display-subsystem@ae00000/dsi@ae94000: unnecessary #address-cells/#size-cells without &#34;ranges&#34;, &#34;dma-ranges&#34; or child &#34;reg&#34; or &#34;ranges&#34; property
+   arch/arm64/boot/dts/qcom/sm8550.dtsi:3919.27-3974.6: Warning (avoid_unnecessary_addr_size): /soc@0/display-subsystem@ae00000/dsi@ae96000: unnecessary #address-cells/#size-cells without &#34;ranges&#34;, &#34;dma-ranges&#34; or child &#34;reg&#34; or &#34;ranges&#34; property
+<span
+class="q">&gt;&gt; arch/arm64/boot/dts/qcom/sm8550-hdk.dtb: /soc@0/geniqup@ac0000/i2c@a80000/hdmi-bridge@2b: failed to match any schema with compatible: [&#39;lontium,lt9611uxc&#39;]
+</span>   arch/arm64/boot/dts/qcom/sm8550-hdk.dtb: clock-controller@aaf0000 (qcom,sm8550-videocc): power-domains: [[56, 6]] is too short
+   	from schema $id: <a
+href="http://devicetree.org/schemas/clock/qcom,sm8450-videocc.yaml">http://devicetree.org/schemas/clock/qcom,sm8450-videocc.yaml</a>#
+   arch/arm64/boot/dts/qcom/sm8550-hdk.dtb: clock-controller@aaf0000 (qcom,sm8550-videocc): required-opps: [[33]] is too short
+   	from schema $id: <a
+href="http://devicetree.org/schemas/clock/qcom,sm8450-videocc.yaml">http://devicetree.org/schemas/clock/qcom,sm8450-videocc.yaml</a>#
+   arch/arm64/boot/dts/qcom/sm8550-hdk.dtb: clock-controller@aaf0000 (qcom,sm8550-videocc): Unevaluated properties are not allowed (&#39;power-domains&#39;, &#39;required-opps&#39; were unexpected)
+   	from schema $id: <a
+href="http://devicetree.org/schemas/clock/qcom,sm8450-videocc.yaml">http://devicetree.org/schemas/clock/qcom,sm8450-videocc.yaml</a>#
+   arch/arm64/boot/dts/qcom/sm8550-hdk.dtb: clock-controller@ade0000 (qcom,sm8550-camcc): power-domains: [[56, 6]] is too short
+   	from schema $id: <a
+href="http://devicetree.org/schemas/clock/qcom,sm8450-camcc.yaml">http://devicetree.org/schemas/clock/qcom,sm8450-camcc.yaml</a>#
+   arch/arm64/boot/dts/qcom/sm8550-hdk.dtb: clock-controller@ade0000 (qcom,sm8550-camcc): required-opps: [[33]] is too short
+   	from schema $id: <a
+href="http://devicetree.org/schemas/clock/qcom,sm8450-camcc.yaml">http://devicetree.org/schemas/clock/qcom,sm8450-camcc.yaml</a>#
+--
+   arch/arm64/boot/dts/qcom/sm8650.dtsi:5295.27-5370.6: Warning (avoid_unnecessary_addr_size): /soc@0/display-subsystem@ae00000/dsi@ae94000: unnecessary #address-cells/#size-cells without &#34;ranges&#34;, &#34;dma-ranges&#34; or child &#34;reg&#34; or &#34;ranges&#34; property
+   arch/arm64/boot/dts/qcom/sm8650.dtsi:5392.27-5448.6: Warning (avoid_unnecessary_addr_size): /soc@0/display-subsystem@ae00000/dsi@ae96000: unnecessary #address-cells/#size-cells without &#34;ranges&#34;, &#34;dma-ranges&#34; or child &#34;reg&#34; or &#34;ranges&#34; property
+   arch/arm64/boot/dts/qcom/sm8650-hdk.dts:834.9-845.5: Warning (graph_child_address): /soc@0/geniqup@ac0000/i2c@a8c000/typec-mux@e/ports: graph node has single child node &#39;port@0&#39;, #address-cells/#size-cells are not necessary
+<span
+class="q">&gt;&gt; arch/arm64/boot/dts/qcom/sm8650-hdk.dtb: /soc@0/geniqup@ac0000/i2c@a98000/hdmi-bridge@2b: failed to match any schema with compatible: [&#39;lontium,lt9611uxc&#39;]
+</span>   arch/arm64/boot/dts/qcom/sm8650-hdk.dtb: clock-controller@aaf0000 (qcom,sm8650-videocc): power-domains: [[79, 6]] is too short
+   	from schema $id: <a
+href="http://devicetree.org/schemas/clock/qcom,sm8450-videocc.yaml">http://devicetree.org/schemas/clock/qcom,sm8450-videocc.yaml</a>#
+   arch/arm64/boot/dts/qcom/sm8650-hdk.dtb: clock-controller@aaf0000 (qcom,sm8650-videocc): Unevaluated properties are not allowed (&#39;power-domains&#39; was unexpected)
+   	from schema $id: <a
+href="http://devicetree.org/schemas/clock/qcom,sm8450-videocc.yaml">http://devicetree.org/schemas/clock/qcom,sm8450-videocc.yaml</a>#
+   arch/arm64/boot/dts/qcom/sm8650-hdk.dtb: clock-controller@ade0000 (qcom,sm8650-camcc): power-domains: [[79, 6]] is too short
+   	from schema $id: <a
+href="http://devicetree.org/schemas/clock/qcom,sm8450-camcc.yaml">http://devicetree.org/schemas/clock/qcom,sm8450-camcc.yaml</a>#
+   arch/arm64/boot/dts/qcom/sm8650-hdk.dtb: clock-controller@ade0000 (qcom,sm8650-camcc): Unevaluated properties are not allowed (&#39;power-domains&#39; was unexpected)
+   	from schema $id: <a
+href="http://devicetree.org/schemas/clock/qcom,sm8450-camcc.yaml">http://devicetree.org/schemas/clock/qcom,sm8450-camcc.yaml</a>#
+--
+<span
+class="q">&gt;&gt; arch/arm64/boot/dts/qcom/qcs6490-rb3gen2-industrial-mezzanine.dtb: /soc@0/geniqup@9c0000/i2c@980000/hdmi-bridge@2b: failed to match any schema with compatible: [&#39;lontium,lt9611uxc&#39;]
+</span>   arch/arm64/boot/dts/qcom/qcs6490-rb3gen2-industrial-mezzanine.dtb: pmic@2 (qcom,pm8350c): pwm:nvmem: [[355, 356]] is too short
+   	from schema $id: <a
+href="http://devicetree.org/schemas/mfd/qcom,spmi-pmic.yaml">http://devicetree.org/schemas/mfd/qcom,spmi-pmic.yaml</a>#
+   arch/arm64/boot/dts/qcom/qcs6490-rb3gen2-industrial-mezzanine.dtb: pwm (qcom,pm8350c-pwm): nvmem: [[355, 356]] is too short
+   	from schema $id: <a
+href="http://devicetree.org/schemas/leds/leds-qcom-lpg.yaml">http://devicetree.org/schemas/leds/leds-qcom-lpg.yaml</a>#
+--
+<span
+class="q">&gt;&gt; arch/arm64/boot/dts/qcom/qcs6490-rb3gen2-vision-mezzanine.dtb: /soc@0/geniqup@9c0000/i2c@980000/hdmi-bridge@2b: failed to match any schema with compatible: [&#39;lontium,lt9611uxc&#39;]
+</span>   arch/arm64/boot/dts/qcom/qcs6490-rb3gen2-vision-mezzanine.dtb: pmic@2 (qcom,pm8350c): pwm:nvmem: [[355, 356]] is too short
+   	from schema $id: <a
+href="http://devicetree.org/schemas/mfd/qcom,spmi-pmic.yaml">http://devicetree.org/schemas/mfd/qcom,spmi-pmic.yaml</a>#
+   arch/arm64/boot/dts/qcom/qcs6490-rb3gen2-vision-mezzanine.dtb: pwm (qcom,pm8350c-pwm): nvmem: [[355, 356]] is too short
+   	from schema $id: <a
+href="http://devicetree.org/schemas/leds/leds-qcom-lpg.yaml">http://devicetree.org/schemas/leds/leds-qcom-lpg.yaml</a>#
+--
+<span
+class="q">&gt;&gt; arch/arm64/boot/dts/qcom/qrb5165-rb5-vision-mezzanine.dtb: /soc@0/geniqup@9c0000/i2c@994000/hdmi-bridge@2b: failed to match any schema with compatible: [&#39;lontium,lt9611uxc&#39;]
+</span>--
+<span
+class="q">&gt;&gt; arch/arm64/boot/dts/qcom/sdm845-db845c-navigation-mezzanine.dtb: /soc@0/geniqup@ac0000/i2c@a88000/hdmi-bridge@3b: failed to match any schema with compatible: [&#39;lontium,lt9611&#39;]
+</span>--
+<span
+class="q">&gt;&gt; arch/arm64/boot/dts/qcom/sm8650-hdk-display-card.dtb: /soc@0/geniqup@ac0000/i2c@a98000/hdmi-bridge@2b: failed to match any schema with compatible: [&#39;lontium,lt9611uxc&#39;]
+</span>   arch/arm64/boot/dts/qcom/sm8650-hdk-display-card.dtb: clock-controller@aaf0000 (qcom,sm8650-videocc): power-domains: [[79, 6]] is too short
+   	from schema $id: <a
+href="http://devicetree.org/schemas/clock/qcom,sm8450-videocc.yaml">http://devicetree.org/schemas/clock/qcom,sm8450-videocc.yaml</a>#
+   arch/arm64/boot/dts/qcom/sm8650-hdk-display-card.dtb: clock-controller@aaf0000 (qcom,sm8650-videocc): Unevaluated properties are not allowed (&#39;power-domains&#39; was unexpected)
+   	from schema $id: <a
+href="http://devicetree.org/schemas/clock/qcom,sm8450-videocc.yaml">http://devicetree.org/schemas/clock/qcom,sm8450-videocc.yaml</a>#
+   arch/arm64/boot/dts/qcom/sm8650-hdk-display-card.dtb: clock-controller@ade0000 (qcom,sm8650-camcc): power-domains: [[79, 6]] is too short
+   	from schema $id: <a
+href="http://devicetree.org/schemas/clock/qcom,sm8450-camcc.yaml">http://devicetree.org/schemas/clock/qcom,sm8450-camcc.yaml</a>#
+   arch/arm64/boot/dts/qcom/sm8650-hdk-display-card.dtb: clock-controller@ade0000 (qcom,sm8650-camcc): Unevaluated properties are not allowed (&#39;power-domains&#39; was unexpected)
+   	from schema $id: <a
+href="http://devicetree.org/schemas/clock/qcom,sm8450-camcc.yaml">http://devicetree.org/schemas/clock/qcom,sm8450-camcc.yaml</a>#
+
+-- 
+0-DAY CI Kernel Test Service
+<a
+href="https://github.com/intel/lkp-tests/wiki">https://github.com/intel/lkp-tests/wiki</a>
+</pre></div></content></entry><entry><author><name>Daniel Lezcano</name><email>daniel.lezcano@linaro.org</email></author><title>Re: [PATCH v1 2/2] iio: adc: Add the NXP SAR ADC support for the s32g2/3 platforms</title><updated>2025-09-05T09:44:46Z</updated><link
+href="https://lore.kernel.org/all/edc8e024-e425-49de-bfa2-44218fe72e26@linaro.org/"/><id>urn:uuid:73514d09-d344-e29e-edfb-c161524011bb</id><thr:in-reply-to
+ref="urn:uuid:b2341310-838b-bb1a-4fa0-382769fc6c8b"
+href="https://lore.kernel.org/all/a3373804-08a4-4526-a432-c21a74ea3d6b@baylibre.com/"/><content
+type="xhtml"><div
+xmlns="http://www.w3.org/1999/xhtml"><pre
+style="white-space:pre-wrap">On 04/09/2025 19:49, David Lechner wrote:
+<span
+class="q">&gt; On 9/4/25 12:40 PM, Daniel Lezcano wrote:
+&gt;&gt;
+&gt;&gt; Hi Nuno,
+&gt;&gt;
+&gt;&gt; On 03/09/2025 13:20, Nuno S&#225; wrote:
+&gt;&gt;&gt; On Wed, 2025-09-03 at 12:27 +0200, Daniel Lezcano wrote:
+&gt;&gt;&gt;&gt; From: Stefan-Gabriel Mirea &lt;stefan-gabriel.mirea@nxp.com&gt;
+&gt;&gt;&gt;&gt;
+&gt;&gt;&gt;&gt; The NXP S32G2 and S32G3 platforms integrate a successive approximation
+&gt;&gt;&gt;&gt; register (SAR) ADC. Two instances are available, each providing 8
+&gt;&gt;&gt;&gt; multiplexed input channels with 12-bit resolution. The conversion rate
+&gt;&gt;&gt;&gt; is up to 1 Msps depending on the configuration and sampling window.
+&gt;&gt;&gt;&gt;
+&gt;&gt;&gt;&gt; The SAR ADC supports raw, buffer, and trigger modes. It can operate
+&gt;&gt;&gt;&gt; in both single-shot and continuous conversion modes, with optional
+&gt;&gt;&gt;&gt; hardware triggering through the cross-trigger unit (CTU) or external
+&gt;&gt;&gt;&gt; events. An internal prescaler allows adjusting the sampling clock,
+&gt;&gt;&gt;&gt; while per-channel programmable sampling times provide fine-grained
+&gt;&gt;&gt;&gt; trade-offs between accuracy and latency. Automatic calibration is
+&gt;&gt;&gt;&gt; performed at probe time to minimize offset and gain errors.
+&gt;&gt;&gt;&gt;
+&gt;&gt;&gt;&gt; The driver is derived from the BSP implementation and has been partly
+&gt;&gt;&gt;&gt; rewritten to comply with upstream requirements. For this reason, all
+&gt;&gt;&gt;&gt; contributors are listed as co-developers, while the author refers to
+&gt;&gt;&gt;&gt; the initial BSP driver file creator.
+&gt;&gt;&gt;&gt;
+&gt;&gt;&gt;&gt; All modes have been validated on the S32G274-RDB2 platform using an
+&gt;&gt;&gt;&gt; externally generated square wave captured by the ADC. Tests covered
+&gt;&gt;&gt;&gt; buffered streaming via IIO, trigger synchronization, and accuracy
+&gt;&gt;&gt;&gt; verification against a precision laboratory signal source.
+&gt;&gt;&gt;&gt;
+&gt;&gt;&gt;&gt; Co-developed-by: Alexandru-Catalin Ionita &lt;alexandru-catalin.ionita@nxp.com&gt;
+&gt;&gt;&gt;&gt; Signed-off-by: Alexandru-Catalin Ionita &lt;alexandru-catalin.ionita@nxp.com&gt;
+&gt;&gt;&gt;&gt; Co-developed-by: Ciprian Costea &lt;ciprianmarian.costea@nxp.com&gt;
+&gt;&gt;&gt;&gt; Signed-off-by: Ciprian Costea &lt;ciprianmarian.costea@nxp.com&gt;
+&gt;&gt;&gt;&gt; Co-developed-by: Radu Pirea (NXP OSS) &lt;radu-nicolae.pirea@oss.nxp.com&gt;
+&gt;&gt;&gt;&gt; Signed-off-by: Radu Pirea (NXP OSS) &lt;radu-nicolae.pirea@oss.nxp.com&gt;
+&gt;&gt;&gt;&gt; Signed-off-by: Stefan-Gabriel Mirea &lt;stefan-gabriel.mirea@nxp.com&gt;
+&gt;&gt;&gt;&gt; Co-developed-by: Daniel Lezcano &lt;daniel.lezcano@linaro.org&gt;
+&gt;&gt;&gt;&gt; Signed-off-by: Daniel Lezcano &lt;daniel.lezcano@linaro.org&gt;
+&gt;&gt;&gt;&gt; ---
+&gt;&gt;
+&gt;&gt; [ ... ]
+&gt;&gt;
+&gt;&gt;&gt; The above needs some discussion at the very least. Have you considered the IIO
+&gt;&gt;&gt; DMA buffer interface? It should be extendable to accommodate any particularity
+&gt;&gt;&gt; of your usecase (or we should at least discuss it).
+&gt;&gt;&gt;
+&gt;&gt;&gt; With it, you also gain a userspace interface where you can actually share DMA
+&gt;&gt;&gt; buffers in a zero copy fashion.&#160;You can also share these buffers with USB
+&gt;&gt;&gt; gadgets. For instance, with libiio, you would be able to fetch samples from your
+&gt;&gt;&gt; host machine (through USB) in a very fast way (zero copy between IIO and USB).
+&gt;&gt;&gt;
+&gt;&gt;&gt; Setting up DMA to then &#34;having&#34; to push it to a SW buffer and needing a syscall
+&gt;&gt;&gt; to retrieve the data seems counter-productive.
+&gt;&gt;
+&gt;&gt; I&#39;ve read a bit about the DMA engine. It is unclear how to use it and there are very few examples in the different drivers to refer to.
+&gt;&gt;
+&gt;&gt; This proposed driver supports the RAW, BUFFER and TRIGGERED.
+&gt;&gt;
+&gt;&gt; Shall I create an IIO device with the modes:
+&gt;&gt;
+&gt;&gt; indio_dev-&gt;modes =
+&gt;&gt;  &#160;&#160;&#160;&#160;INDIO_DIRECT_MODE |
+&gt; 
+&gt; Only INDIO_DIRECT_MODE needs to be set here.
+&gt; 
+&gt;&gt;  &#160;&#160;&#160;&#160;INDIO_BUFFER_HARDWARE |
+&gt;&gt;  &#160;&#160;&#160;&#160;INDIO_BUFFER_TRIGGERED
+&gt;&gt;
+&gt;&gt; And then use:
+&gt;&gt;
+&gt;&gt; devm_iio_triggered_buffer_setup()
+&gt; 
+&gt; Yes, use this and it will add INDIO_BUFFER_TRIGGERED to the flags.
+&gt; 
+&gt;&gt;
+&gt;&gt; and
+&gt;&gt;
+&gt;&gt; devm_iio_dmaengine_buffer_setup_with_handle
+&gt; 
+&gt; Likewise, this will add INDIO_BUFFER_HARDWARE.
+&gt; 
+&gt; And you likely only need to call devm_iio_dmaengine_buffer_setup() which will
+&gt; save some boilerplate code.
+</span>
+What is still unclear for me is the trigger and the dma modes.
+
+If the dma engine is supported, I should use 
+devm_iio_dmaengine_buffer_setup_with_handle(), but will the trigger mode 
+be supported also automatically (I don&#39;t see a clear answer in the 
+documentation neither in the drivers) ?
+
+If not, shall I call devm_iio_triggered_buffer_setup() and 
+devm_iio_dmaengine_buffer_setup_with_handle() ?
+
+
+
+
+
+
+-- 
+&lt;<a
+href="http://www.linaro.org/">http://www.linaro.org/</a>&gt; Linaro.org &#9474; Open source software for ARM SoCs
+
+Follow Linaro:  &lt;<a
+href="http://www.facebook.com/pages/Linaro">http://www.facebook.com/pages/Linaro</a>&gt; Facebook |
+&lt;<a
+href="http://twitter.com/#!/linaroorg">http://twitter.com/#!/linaroorg</a>&gt; Twitter |
+&lt;<a
+href="http://www.linaro.org/linaro-blog/">http://www.linaro.org/linaro-blog/</a>&gt; Blog
+</pre></div></content></entry><entry><author><name>Stanislav Fort</name><email>stanislav.fort@aisle.com</email></author><title>Re: [PATCH] mm/memcg: v1: account event registrations and drop world-writable cgroup.event_control</title><updated>2025-09-05T09:44:36Z</updated><link
+href="https://lore.kernel.org/all/CA+uRpKSm_u_RDrR8nP5DFFeV4vy5vT4tp1xX=rVNd-ehTCzkMw@mail.gmail.com/"/><id>urn:uuid:a25590c6-c19d-8061-1cfa-868332bb4463</id><thr:in-reply-to
+ref="urn:uuid:e990e6c2-8713-d0a3-5b4d-dda1a1830706"
+href="https://lore.kernel.org/all/sa4mytppu6dfpquytx6jwdvak7bkyruztnr27vibbzhux2rjsl@pnrxdi5ecua3/"/><content
+type="xhtml"><div
+xmlns="http://www.w3.org/1999/xhtml"><pre
+style="white-space:pre-wrap"><a
+href="https://lore.kernel.org/all/CA+uRpKSm_u_RDrR8nP5DFFeV4vy5vT4tp1xX=rVNd-ehTCzkMw@mail.gmail.com/1-a.txt">[-- Attachment #1: Type: text/plain, Size: 1628 bytes --]</a>
+
+Hi Roman, Shakeel, Johannes, and all,
+
+Thanks for the quick reviews and acks.
+
+I&#8217;ve sent v2 switching to GFP_KERNEL_ACCOUNT in all three allocations.
+Otherwise unchanged.
+Link: <a
+href="https://lore.kernel.org/all/aLqvzCiPCGzA5eYo@b7823f61de85/T/#t">https://lore.kernel.org/all/aLqvzCiPCGzA5eYo@b7823f61de85/T/#t</a>
+
+If you&#8217;d like me to respin to restore any tags into the commit message
+(e.g., Acked-by: Johannes, Reported-by, Cc: stable) instead of adding them
+while applying, I&#8217;m happy to send a trivial v3.
+
+Let me know if this looks good.
+
+Best wishes,
+Stanislav Fort
+Aisle Research
+
+On Fri, Sep 5, 2025 at 2:46&#8239;AM Shakeel Butt &lt;shakeel.butt@linux.dev&gt; wrote:
+
+<span
+class="q">&gt; On Thu, Sep 04, 2025 at 09:12:48PM +0300, Stanislav Fort wrote:
+&gt; &gt; In cgroup v1, the legacy cgroup.event_control file is world-writable and
+&gt; allows unprivileged users to register unbounded events and thresholds. Each
+&gt; registration allocates kernel memory without capping or memcg charging,
+&gt; which can be abused to exhaust kernel memory in affected configurations.
+&gt; &gt;
+&gt; &gt; Make the following minimal changes:
+&gt; &gt; - Account allocations with __GFP_ACCOUNT in event and threshold
+&gt; registration.
+&gt; &gt; - Remove CFTYPE_WORLD_WRITABLE from cgroup.event_control to make it
+&gt; owner-writable.
+&gt; &gt;
+&gt; &gt; This does not affect cgroup v2. Allocations are still subject to kmem
+&gt; accounting being enabled, but this reduces unbounded global growth.
+&gt; &gt;
+&gt; &gt; Reported-by: Stanislav Fort &lt;disclosure@aisle.com&gt;
+&gt; &gt; Acked-by: Johannes Weiner &lt;hannes@cmpxchg.org&gt;
+&gt; &gt; Cc: stable@vger.kernel.org
+&gt; &gt; Signed-off-by: Stanislav Fort &lt;disclosure@aisle.com&gt;
+&gt;
+&gt; Acked-by: Shakeel Butt &lt;shakeel.butt@linux.dev&gt;
+&gt;
+</span>
+<a
+href="https://lore.kernel.org/all/CA+uRpKSm_u_RDrR8nP5DFFeV4vy5vT4tp1xX=rVNd-ehTCzkMw@mail.gmail.com/2-a.bin">[-- Attachment #2: Type: text/html, Size: 2432 bytes --]</a>
+</pre></div></content></entry><entry><author><name>Harikrishna Shenoy</name><email>h-shenoy@ti.com</email></author><title>[PATCH v3] arm64: dts: ti: k3-j721e-main: Add DSI and DPHY-TX</title><updated>2025-09-05T09:43:37Z</updated><link
+href="https://lore.kernel.org/all/20250905094325.472473-1-h-shenoy@ti.com/"/><id>urn:uuid:9eeedb4d-ddc0-3ae7-54a5-d289d3863cdd</id><content
+type="xhtml"><div
+xmlns="http://www.w3.org/1999/xhtml"><pre
+style="white-space:pre-wrap">From: Rahul T R &lt;r-ravikumar@ti.com&gt;
+
+TI&#39;s J721E SoC supports a DPI to DSI video signal conversion bridge on
+it&#39;s platform bus. The IP is from Cadence, and it has a custom TI
+wrapper around it to facilitate integration.
+
+This IP takes the DPI video signals from DSS and alongwith the DPHY IP,
+it transmits DSI video signals out of the SoC.
+
+Add support for DSI bridge and the DPHY-TX.
+
+Signed-off-by: Rahul T R &lt;r-ravikumar@ti.com&gt;
+Signed-off-by: Jayesh Choudhary &lt;j-choudhary@ti.com&gt;
+Signed-off-by: Harikrishna Shenoy &lt;h-shenoy@ti.com&gt;
+---
+Changelog v2 -&gt; v3:
+-Add dsi ports.
+-Revert to phy lablels used in v1.
+
+Link to v1- <a
+href="https://lore.kernel.org/all/20250822124622.1424473-1-h-shenoy@ti.com/">https://lore.kernel.org/all/20250822124622.1424473-1-h-shenoy@ti.com/</a>
+Link to v2- <a
+href="https://lore.kernel.org/all/20250904105915.3043773-1-h-shenoy@ti.com/">https://lore.kernel.org/all/20250904105915.3043773-1-h-shenoy@ti.com/</a>
+ 
+ arch/arm64/boot/dts/ti/k3-j721e-main.dtsi | 39 +++++++++++++++++++++++
+ 1 file <a href="https://lore.kernel.org/all/20250905094325.472473-1-h-shenoy@ti.com/#related">changed</a>, 39 insertions(+)
+
+<span
+class="head">diff --git a/arch/arm64/boot/dts/ti/k3-j721e-main.dtsi b/arch/arm64/boot/dts/ti/k3-j721e-main.dtsi
+index ab3666ff4297..78fde982aff0 100644
+--- a/arch/arm64/boot/dts/ti/k3-j721e-main.dtsi
++++ b/arch/arm64/boot/dts/ti/k3-j721e-main.dtsi
+</span><span
+class="hunk">@@ -1887,6 +1887,45 @@ port@4 {
+</span> 		};
+ 	};
+ 
+<span
+class="add">+	dphy2: phy@4480000 {
++		compatible = &#34;ti,j721e-dphy&#34;;
++		reg = &lt;0x00 0x04480000 0x00 0x1000&gt;;
++		clocks = &lt;&#38;k3_clks 296 1&gt;, &lt;&#38;k3_clks 296 3&gt;;
++		clock-names = &#34;psm&#34;, &#34;pll_ref&#34;;
++		#phy-cells = &lt;0&gt;;
++		power-domains = &lt;&#38;k3_pds 296 TI_SCI_PD_EXCLUSIVE&gt;;
++		assigned-clocks = &lt;&#38;k3_clks 296 3&gt;;
++		assigned-clock-parents = &lt;&#38;k3_clks 296 4&gt;;
++		assigned-clock-rates = &lt;19200000&gt;;
++		status = &#34;disabled&#34;;
++	};
++
++	dsi0: dsi@4800000 {
++		compatible = &#34;ti,j721e-dsi&#34;;
++		reg = &lt;0x00 0x04800000 0x00 0x100000&gt;, &lt;0x00 0x04710000 0x00 0x100&gt;;
++		clocks = &lt;&#38;k3_clks 150 1&gt;, &lt;&#38;k3_clks 150 5&gt;;
++		clock-names = &#34;dsi_p_clk&#34;, &#34;dsi_sys_clk&#34;;
++		power-domains = &lt;&#38;k3_pds 150 TI_SCI_PD_EXCLUSIVE&gt;;
++		interrupt-parent = &lt;&#38;gic500&gt;;
++		interrupts = &lt;GIC_SPI 600 IRQ_TYPE_LEVEL_HIGH&gt;;
++		phys = &lt;&#38;dphy2&gt;;
++		phy-names = &#34;dphy&#34;;
++		status = &#34;disabled&#34;;
++
++		dsi0_ports: ports {
++			#address-cells = &lt;1&gt;;
++			#size-cells = &lt;0&gt;;
++
++			port@0 {
++				reg = &lt;0&gt;;
++			};
++
++			port@1 {
++				reg = &lt;1&gt;;
++			};
++		};
++	};
++
+</span> 	dss: dss@4a00000 {
+ 		compatible = &#34;ti,j721e-dss&#34;;
+ 		reg =
+-- 
+2.34.1
+
+</pre></div></content></entry><entry><author><name>Julia Lawall</name><email>julia.lawall@inria.fr</email></author><title>Re: [cocci] [RFC] Sharing data processing resources for selected SmPL scripts?</title><updated>2025-09-05T09:43:25Z</updated><link
+href="https://lore.kernel.org/all/a00a59b-3079-d55c-eaf6-2db4c14f92a3@inria.fr/"/><id>urn:uuid:fdc5c9e1-c656-f65b-23ae-4153dc6ac90c</id><thr:in-reply-to
+ref="urn:uuid:7cd86bcd-158d-800a-efbe-9452056689d3"
+href="https://lore.kernel.org/all/ba6b7f45-6c59-4ad1-9b4b-a02f34036d7e@web.de/"/><content
+type="xhtml"><div
+xmlns="http://www.w3.org/1999/xhtml"><pre
+style="white-space:pre-wrap">
+
+On Fri, 5 Sep 2025, Markus Elfring wrote:
+
+<span
+class="q">&gt; Hello,
+&gt;
+&gt; I became curious if further developers would like to try the following script out
+&gt; for the semantic patch language.
+&gt;
+&gt;
+&gt; @display@
+&gt; identifier action;
+&gt; type t;
+&gt; @@
+&gt; *t * action(...)
+&gt;  {
+&gt;  ... when any
+</span>
+when any is not useful here.
+
+<span
+class="q">&gt;  }
+&gt;
+&gt;
+&gt; I interpret such a search approach in the way that it should extract some data
+&gt; from a lot of source code places.
+&gt; Thus I imagine that it results also in special software run time characteristics
+&gt; which matter especially for big codebases like Linux.
+</span>
+I guess it would be quite fast, because it will just find the deader of
+each function.
+
+julia
+
+<span
+class="q">&gt; How do you think about to clarify corresponding data collections
+&gt; and computation resources?
+&gt;
+&gt; Related source code analysis concerns can eventually be also clarified.
+&gt;
+&gt; * Handling of function declarations in header files
+&gt;
+&gt; * Relevance of some preprocessor directives
+&gt;
+&gt;
+&gt; Regards,
+&gt; Markus
+&gt;
+</span></pre></div></content></entry><entry><author><name>Michal Hocko</name><email>mhocko@suse.com</email></author><title>Re: [PATCH] mm/oom_kill: kill current in OOM when binding to cpu-less nodes</title><updated>2025-09-05T09:42:15Z</updated><link
+href="https://lore.kernel.org/all/aLqwcXHzsaTxN3dM@tiehlicka/"/><id>urn:uuid:5fb825cd-f738-5e33-d7c2-e7e3507c29bb</id><thr:in-reply-to
+ref="urn:uuid:fad236a6-c691-6a2b-73cc-d3fb714f4c96"
+href="https://lore.kernel.org/all/69180098-9fcf-44c1-ac6b-dc049b56459e@huawei.com/"/><content
+type="xhtml"><div
+xmlns="http://www.w3.org/1999/xhtml"><pre
+style="white-space:pre-wrap">On Fri 05-09-25 17:25:44, Jinjiang Tu wrote:
+<span
+class="q">&gt; 
+&gt; &#22312; 2025/9/5 17:10, Michal Hocko &#20889;&#36947;:
+&gt; &gt; On Fri 05-09-25 16:18:43, Jinjiang Tu wrote:
+&gt; &gt; &gt; &#22312; 2025/9/5 16:08, Michal Hocko &#20889;&#36947;:
+&gt; &gt; &gt; &gt; On Fri 05-09-25 09:56:03, Jinjiang Tu wrote:
+&gt; &gt; &gt; &gt; &gt; &#22312; 2025/9/4 22:25, Michal Hocko &#20889;&#36947;:
+&gt; &gt; &gt; &gt; &gt; &gt; On Thu 04-09-25 21:44:31, Jinjiang Tu wrote:
+&gt; &gt; &gt; &gt; &gt; &gt; &gt; out_of_memory() selects tasks without considering mempolicy. Assuming a
+&gt; &gt; &gt; &gt; &gt; &gt; &gt; cpu-less NUMA Node, ordinary process that don&#39;t set mempolicy don&#39;t
+&gt; &gt; &gt; &gt; &gt; &gt; &gt; allocate memory from this cpu-less Node, unless other NUMA Nodes are below
+&gt; &gt; &gt; &gt; &gt; &gt; &gt; low watermark. If a task binds to this cpu-less Node and triggers OOM, many
+&gt; &gt; &gt; &gt; &gt; &gt; &gt; tasks may be killed wrongly that don&#39;t occupy memory from this Node.
+&gt; &gt; &gt; &gt; &gt; &gt; I can see how a miconfigured task that binds _only_ to memoryless nodes
+&gt; &gt; &gt; &gt; &gt; &gt; should be killed but this is not what the patch does, right?  Could you
+&gt; &gt; &gt; &gt; &gt; &gt; tell us more about the specific situation?
+&gt; &gt; &gt; &gt; &gt; We have some cpu-less NUMA Nodes, the memory are hotpluged in, and the zone
+&gt; &gt; &gt; &gt; &gt; is configured as ZONE_MOVABLE to guarantee these used memory can be migrated when
+&gt; &gt; &gt; &gt; &gt; we want to offline the NUMA Node.
+&gt; &gt; &gt; &gt; &gt; 
+&gt; &gt; &gt; &gt; &gt; Generally tasks doesn&#39;t configure any mempolicy and use the default mempolicy, i.e.
+&gt; &gt; &gt; &gt; &gt; allocate from NUMA Node where the task is running on, and fallback to other NUMA Nodes
+&gt; &gt; &gt; &gt; &gt; when the local NUMA Node is below low watermark.As a result, these cpu-less NUMA Nodes
+&gt; &gt; &gt; &gt; &gt; won&#39;t be allocated until the NUMA Nodes with cpus are with low memory. However, These
+&gt; &gt; &gt; &gt; &gt; cpu-less NUMA Nodes are configured as ZONE_MOVABLE, can&#39;t be used by kernel allocation,
+&gt; &gt; &gt; &gt; &gt; leading to OOM with large amount of MOVABLE memory.
+&gt; &gt; &gt; &gt; Right, this is a fundamental constrain of movable zones. They cannot
+&gt; &gt; &gt; &gt; satisfy non-movable allocations and you can get OOM for those requests
+&gt; &gt; &gt; &gt; even if there is plenty of movable memory available. This is no
+&gt; &gt; &gt; &gt; different from highmem systems and kernel allocations.
+&gt; &gt; &gt; &gt; 
+&gt; &gt; &gt; &gt; &gt; To avoid it, we make some tasks binds to these cpu-less NUMA Nodes to use these memory.
+&gt; &gt; &gt; &gt; &gt; When these tasks trigger OOM, tasks that don&#39;t use these cpu-less NUMA Nodes may be killed
+&gt; &gt; &gt; &gt; &gt; according to rss.Even worse, after one task is killed, the allocating task find there is
+&gt; &gt; &gt; &gt; &gt; still no memory, triggers OOM again and kills another wrong task.
+&gt; &gt; &gt; &gt; Let&#39;s see whether I follow you here. So you are binding some tasks to movable
+&gt; &gt; &gt; &gt; nodes only and if their allocation fails you want to kill that task
+&gt; &gt; &gt; &gt; rather than invoking mempolicy OOM killer as that could kill tasks
+&gt; &gt; &gt; &gt; which are not constrained to movable nodes, right?
+&gt; &gt; &gt; Yes. It&#39;t difficult to kill tasks that use movable nodes memory, because we have
+&gt; &gt; &gt; no information of per-numa rss of each task. So, kill current task is the simplest way
+&gt; &gt; &gt; to avoid killing wrongly.
+&gt; &gt; There were attempts to make the oom killer cpuset aware. This would
+&gt; &gt; allow to constrain the oom killer to a cpuset for which we cannot
+&gt; &gt; satisfy the allocation for. I do not remember details why this reach
+&gt; &gt; meargable state. Have you considered something like that as an option?
+&gt; 
+&gt; Only select tasks that bind to one of these movable nodes, it seems better.
+&gt; 
+&gt; Although oom killer could only select according to task mempolicy, not vma policy, it&#39;t better
+&gt; than blindly killing current.
+</span>
+Yes, I do not think we can ever support full mempolicy capabilities but
+recognizing this is a cpuset allocation failure and selecting from the
+cpuset tasks makes a lot of sense.
+
+-- 
+Michal Hocko
+SUSE Labs
+
+</pre></div></content></entry><entry><author><name>CK Hu (&#32993;&#20426;&#20809;)</name><email>ck.hu@mediatek.com</email></author><title>Re: [PATCH v7 10/20] soc: mediatek: mtk-cmdq: Add new APIs to replace cmdq_pkt_write() and cmdq_pkt_write_mask()</title><updated>2025-09-05T09:42:06Z</updated><link
+href="https://lore.kernel.org/all/b2335fd9296bc6f3511f8139870f0c34db1be62a.camel@mediatek.com/"/><id>urn:uuid:f1ca9e65-729f-2e57-6a32-8a4cc847d0d7</id><thr:in-reply-to
+ref="urn:uuid:2a3cea8a-0f99-2ec3-0e76-2749646cda05"
+href="https://lore.kernel.org/all/20250827114006.3310175-11-jason-jh.lin@mediatek.com/"/><content
+type="xhtml"><div
+xmlns="http://www.w3.org/1999/xhtml"><pre
+style="white-space:pre-wrap"><a
+href="https://lore.kernel.org/all/b2335fd9296bc6f3511f8139870f0c34db1be62a.camel@mediatek.com/1-a.txt">[-- Attachment #1: Type: text/plain, Size: 2909 bytes --]</a>
+
+On Wed, 2025-08-27 at 19:37 +0800, Jason-JH Lin wrote:
+<span
+class="q">&gt; To support generating GCE write instructions using both pa_base and
+&gt; subsys, the original cmdq_pkt_write() and cmdq_pkt_write_mask() have
+&gt; been expanded into four new APIs:
+&gt; - Replaced cmdq_pkt_write() to cmdq_pkt_write_pa() and
+&gt;   cmdq_pkt_write_subsys().
+&gt; - Replaced cmdq_pkt_write_mask() to cmdq_pkt_write_mask_pa() and
+&gt;   cmdq_pkt_write_mask_subsys().
+&gt; 
+&gt; The original cmdq_pkt_write() and cmdq_pkt_write_mask() will be removed
+&gt; after all CMDQ users have migrated to the new APIs.
+&gt; 
+&gt; Signed-off-by: Jason-JH Lin &lt;jason-jh.lin@mediatek.com&gt;
+&gt; ---
+&gt;  drivers/soc/mediatek/mtk-cmdq-helper.c | 41 +++++++++++++
+&gt;  include/linux/soc/mediatek/mtk-cmdq.h  | 79 ++++++++++++++++++++++++++
+&gt;  2 files changed, 120 insertions(+)
+&gt; 
+&gt; diff --git a/drivers/soc/mediatek/mtk-cmdq-helper.c b/drivers/soc/mediatek/mtk-cmdq-helper.c
+&gt; index 41e1997cdd53..7e86299213d8 100644
+&gt; --- a/drivers/soc/mediatek/mtk-cmdq-helper.c
+&gt; +++ b/drivers/soc/mediatek/mtk-cmdq-helper.c
+&gt; @@ -213,6 +213,26 @@ int cmdq_pkt_write(struct cmdq_pkt *pkt, u8 subsys, u16 offset, u32 value)
+&gt;  }
+&gt;  EXPORT_SYMBOL(cmdq_pkt_write);
+&gt;  
+&gt; +int cmdq_pkt_write_pa(struct cmdq_pkt *pkt, u8 subsys /*unused*/, u32 pa_base,
+&gt; +		      u16 offset, u32 value)
+</span>
+subsys is useless. Drop it.
+
+<span
+class="q">&gt; +{
+&gt; +	int err;
+&gt; +
+&gt; +	err = cmdq_pkt_assign(pkt, CMDQ_THR_SPR_IDX0, CMDQ_ADDR_HIGH(pa_base));
+&gt; +	if (err &lt; 0)
+&gt; +		return err;
+&gt; +
+&gt; +	return cmdq_pkt_write_s_value(pkt, CMDQ_THR_SPR_IDX0, CMDQ_ADDR_LOW(offset), value);
+&gt; +}
+&gt; +EXPORT_SYMBOL(cmdq_pkt_write_pa);
+&gt; +
+&gt; +int cmdq_pkt_write_subsys(struct cmdq_pkt *pkt, u8 subsys, u32 pa_base /*unused*/,
+&gt; +			  u16 offset, u32 value)
+</span>
+pa_base is useless. Drop it.
+
+<span
+class="q">&gt; +{
+&gt; +	return cmdq_pkt_write(pkt, subsys, offset, value);
+&gt; +}
+&gt; +EXPORT_SYMBOL(cmdq_pkt_write_subsys);
+&gt; +
+&gt;  int cmdq_pkt_write_mask(struct cmdq_pkt *pkt, u8 subsys,
+&gt;  			u16 offset, u32 value, u32 mask)
+&gt;  {
+&gt; @@ -230,6 +250,27 @@ int cmdq_pkt_write_mask(struct cmdq_pkt *pkt, u8 subsys,
+&gt;  }
+&gt;  EXPORT_SYMBOL(cmdq_pkt_write_mask);
+&gt;  
+&gt; +int cmdq_pkt_write_mask_pa(struct cmdq_pkt *pkt, u8 subsys /*unused*/, u32 pa_base,
+&gt; +			   u16 offset, u32 value, u32 mask)
+</span>
+subsys is useless. Drop it.
+
+<span
+class="q">&gt; +{
+&gt; +	int err;
+&gt; +
+&gt; +	err = cmdq_pkt_assign(pkt, CMDQ_THR_SPR_IDX0, CMDQ_ADDR_HIGH(pa_base));
+&gt; +	if (err &lt; 0)
+&gt; +		return err;
+&gt; +
+&gt; +	return cmdq_pkt_write_s_mask_value(pkt, CMDQ_THR_SPR_IDX0,
+&gt; +					   CMDQ_ADDR_LOW(offset), value, mask);
+&gt; +}
+&gt; +EXPORT_SYMBOL(cmdq_pkt_write_mask_pa);
+&gt; +
+&gt; +int cmdq_pkt_write_mask_subsys(struct cmdq_pkt *pkt, u8 subsys, u32 pa_base /*unused*/,
+&gt; +			       u16 offset, u32 value, u32 mask)
+</span>
+pa_base is useless. Drop it.
+
+<span
+class="q">&gt; +{
+&gt; +	return cmdq_pkt_write_mask(pkt, subsys, offset, value, mask);
+&gt; +}
+&gt; +EXPORT_SYMBOL(cmdq_pkt_write_mask_subsys);
+&gt; +
+</span>
+<a
+href="https://lore.kernel.org/all/b2335fd9296bc6f3511f8139870f0c34db1be62a.camel@mediatek.com/2-a.bin">[-- Attachment #2: Type: text/html, Size: 5331 bytes --]</a>
+</pre></div></content></entry><entry><author><name>CK Hu (&#32993;&#20426;&#20809;)</name><email>ck.hu@mediatek.com</email></author><title>Re: [PATCH v7 10/20] soc: mediatek: mtk-cmdq: Add new APIs to replace cmdq_pkt_write() and cmdq_pkt_write_mask()</title><updated>2025-09-05T09:42:04Z</updated><link
+href="https://lore.kernel.org/all/b2335fd9296bc6f3511f8139870f0c34db1be62a.camel@mediatek.com/"/><id>urn:uuid:f1ca9e65-729f-2e57-6a32-8a4cc847d0d7</id><thr:in-reply-to
+ref="urn:uuid:2a3cea8a-0f99-2ec3-0e76-2749646cda05"
+href="https://lore.kernel.org/all/20250827114006.3310175-11-jason-jh.lin@mediatek.com/"/><content
+type="xhtml"><div
+xmlns="http://www.w3.org/1999/xhtml"><pre
+style="white-space:pre-wrap">On Wed, 2025-08-27 at 19:37 +0800, Jason-JH Lin wrote:
+<span
+class="q">&gt; To support generating GCE write instructions using both pa_base and
+&gt; subsys, the original cmdq_pkt_write() and cmdq_pkt_write_mask() have
+&gt; been expanded into four new APIs:
+&gt; - Replaced cmdq_pkt_write() to cmdq_pkt_write_pa() and
+&gt;   cmdq_pkt_write_subsys().
+&gt; - Replaced cmdq_pkt_write_mask() to cmdq_pkt_write_mask_pa() and
+&gt;   cmdq_pkt_write_mask_subsys().
+&gt; 
+&gt; The original cmdq_pkt_write() and cmdq_pkt_write_mask() will be removed
+&gt; after all CMDQ users have migrated to the new APIs.
+&gt; 
+&gt; Signed-off-by: Jason-JH Lin &lt;jason-jh.lin@mediatek.com&gt;
+&gt; ---
+&gt;  drivers/soc/mediatek/mtk-cmdq-helper.c | 41 +++++++++++++
+&gt;  include/linux/soc/mediatek/mtk-cmdq.h  | 79 ++++++++++++++++++++++++++
+&gt;  2 files changed, 120 insertions(+)
+&gt; 
+&gt; diff --git a/drivers/soc/mediatek/mtk-cmdq-helper.c b/drivers/soc/mediatek/mtk-cmdq-helper.c
+&gt; index 41e1997cdd53..7e86299213d8 100644
+&gt; --- a/drivers/soc/mediatek/mtk-cmdq-helper.c
+&gt; +++ b/drivers/soc/mediatek/mtk-cmdq-helper.c
+&gt; @@ -213,6 +213,26 @@ int cmdq_pkt_write(struct cmdq_pkt *pkt, u8 subsys, u16 offset, u32 value)
+&gt;  }
+&gt;  EXPORT_SYMBOL(cmdq_pkt_write);
+&gt;  
+&gt; +int cmdq_pkt_write_pa(struct cmdq_pkt *pkt, u8 subsys /*unused*/, u32 pa_base,
+&gt; +		      u16 offset, u32 value)
+</span>
+subsys is useless. Drop it.
+
+<span
+class="q">&gt; +{
+&gt; +	int err;
+&gt; +
+&gt; +	err = cmdq_pkt_assign(pkt, CMDQ_THR_SPR_IDX0, CMDQ_ADDR_HIGH(pa_base));
+&gt; +	if (err &lt; 0)
+&gt; +		return err;
+&gt; +
+&gt; +	return cmdq_pkt_write_s_value(pkt, CMDQ_THR_SPR_IDX0, CMDQ_ADDR_LOW(offset), value);
+&gt; +}
+&gt; +EXPORT_SYMBOL(cmdq_pkt_write_pa);
+&gt; +
+&gt; +int cmdq_pkt_write_subsys(struct cmdq_pkt *pkt, u8 subsys, u32 pa_base /*unused*/,
+&gt; +			  u16 offset, u32 value)
+</span>
+pa_base is useless. Drop it.
+
+<span
+class="q">&gt; +{
+&gt; +	return cmdq_pkt_write(pkt, subsys, offset, value);
+&gt; +}
+&gt; +EXPORT_SYMBOL(cmdq_pkt_write_subsys);
+&gt; +
+&gt;  int cmdq_pkt_write_mask(struct cmdq_pkt *pkt, u8 subsys,
+&gt;  			u16 offset, u32 value, u32 mask)
+&gt;  {
+&gt; @@ -230,6 +250,27 @@ int cmdq_pkt_write_mask(struct cmdq_pkt *pkt, u8 subsys,
+&gt;  }
+&gt;  EXPORT_SYMBOL(cmdq_pkt_write_mask);
+&gt;  
+&gt; +int cmdq_pkt_write_mask_pa(struct cmdq_pkt *pkt, u8 subsys /*unused*/, u32 pa_base,
+&gt; +			   u16 offset, u32 value, u32 mask)
+</span>
+subsys is useless. Drop it.
+
+<span
+class="q">&gt; +{
+&gt; +	int err;
+&gt; +
+&gt; +	err = cmdq_pkt_assign(pkt, CMDQ_THR_SPR_IDX0, CMDQ_ADDR_HIGH(pa_base));
+&gt; +	if (err &lt; 0)
+&gt; +		return err;
+&gt; +
+&gt; +	return cmdq_pkt_write_s_mask_value(pkt, CMDQ_THR_SPR_IDX0,
+&gt; +					   CMDQ_ADDR_LOW(offset), value, mask);
+&gt; +}
+&gt; +EXPORT_SYMBOL(cmdq_pkt_write_mask_pa);
+&gt; +
+&gt; +int cmdq_pkt_write_mask_subsys(struct cmdq_pkt *pkt, u8 subsys, u32 pa_base /*unused*/,
+&gt; +			       u16 offset, u32 value, u32 mask)
+</span>
+pa_base is useless. Drop it.
+
+<span
+class="q">&gt; +{
+&gt; +	return cmdq_pkt_write_mask(pkt, subsys, offset, value, mask);
+&gt; +}
+&gt; +EXPORT_SYMBOL(cmdq_pkt_write_mask_subsys);
+&gt; +
+</span></pre></div></content></entry><entry><author><name>Eric Auger</name><email>eric.auger@redhat.com</email></author><title>Re: [RFC PATCH v3 09/15] hw/arm/smmuv3-accel: Support nested STE install/uninstall support</title><updated>2025-09-05T09:41:59Z</updated><link
+href="https://lore.kernel.org/all/41ceadf1-07de-4c8a-8935-d709ac7cf6bc@redhat.com/"/><id>urn:uuid:4da3d754-8b91-e80a-167f-4f285d568d87</id><thr:in-reply-to
+ref="urn:uuid:08c03ee4-4a51-f1a5-1447-f22e112cfbbe"
+href="https://lore.kernel.org/all/20250714155941.22176-10-shameerali.kolothum.thodi@huawei.com/"/><content
+type="xhtml"><div
+xmlns="http://www.w3.org/1999/xhtml"><pre
+style="white-space:pre-wrap">Hi Shameer,
+
+On 7/14/25 5:59 PM, Shameer Kolothum wrote:
+<span
+class="q">&gt; From: Nicolin Chen &lt;nicolinc@nvidia.com&gt;
+&gt;
+&gt; Allocates a s1 HWPT for the Guest s1 stage and attaches that
+&gt; to the dev. This will be invoked when Guest issues
+</span>dev: I think you shall be more precise because there are so many now ;-)
+<span
+class="q">&gt; SMMU_CMD_CFGI_STE/STE_RANGE.
+&gt;
+&gt; While at it, we are also exporting both smmu_find_ste() and
+&gt; smmuv3_flush_config() from smmuv3.c for use here.
+&gt;
+&gt; Signed-off-by: Nicolin Chen &lt;nicolinc@nvidia.com&gt;
+&gt; Signed-off-by: Shameer Kolothum &lt;shameerali.kolothum.thodi@huawei.com&gt;
+&gt; ---
+&gt;  hw/arm/smmuv3-accel.c    | 130 +++++++++++++++++++++++++++++++++++++++
+&gt;  hw/arm/smmuv3-accel.h    |  17 +++++
+&gt;  hw/arm/smmuv3-internal.h |   4 ++
+&gt;  hw/arm/smmuv3.c          |   8 ++-
+&gt;  hw/arm/trace-events      |   1 +
+&gt;  5 files changed, 157 insertions(+), 3 deletions(-)
+&gt;
+&gt; diff --git a/hw/arm/smmuv3-accel.c b/hw/arm/smmuv3-accel.c
+&gt; index fe90d48675..74bf20cfaf 100644
+&gt; --- a/hw/arm/smmuv3-accel.c
+&gt; +++ b/hw/arm/smmuv3-accel.c
+&gt; @@ -18,9 +18,139 @@
+&gt;  
+&gt;  #include &#34;smmuv3-accel.h&#34;
+&gt;  
+&gt; +#include &#34;smmuv3-internal.h&#34;
+&gt; +
+&gt;  #define SMMU_STE_VALID      (1ULL &lt;&lt; 0)
+&gt;  #define SMMU_STE_CFG_BYPASS (1ULL &lt;&lt; 3)
+&gt;  
+&gt; +static void
+&gt; +smmuv3_accel_dev_uninstall_nested_ste(SMMUv3AccelDevice *accel_dev, bool abort)
+&gt; +{
+&gt; +    HostIOMMUDeviceIOMMUFD *idev = accel_dev-&gt;idev;
+&gt; +    SMMUS1Hwpt *s1_hwpt = accel_dev-&gt;s1_hwpt;
+&gt; +    uint32_t hwpt_id;
+&gt; +
+&gt; +    if (!s1_hwpt || !accel_dev-&gt;viommu) {
+&gt; +        return;
+&gt; +    }
+&gt; +
+&gt; +    if (abort) {
+&gt; +        hwpt_id = accel_dev-&gt;viommu-&gt;abort_hwpt_id;
+&gt; +    } else {
+&gt; +        hwpt_id = accel_dev-&gt;viommu-&gt;bypass_hwpt_id;
+&gt; +    }
+&gt; +
+&gt; +    host_iommu_device_iommufd_attach_hwpt(idev, hwpt_id, &#38;error_abort);
+&gt; +    iommufd_backend_free_id(s1_hwpt-&gt;iommufd, s1_hwpt-&gt;hwpt_id);
+&gt; +    accel_dev-&gt;s1_hwpt = NULL;
+&gt; +    g_free(s1_hwpt);
+&gt; +}
+&gt; +
+&gt; +static int
+&gt; +smmuv3_accel_dev_install_nested_ste(SMMUv3AccelDevice *accel_dev,
+&gt; +                                    uint32_t data_type, uint32_t data_len,
+&gt; +                                    void *data)
+&gt; +{
+&gt; +    SMMUViommu *viommu = accel_dev-&gt;viommu;
+&gt; +    SMMUS1Hwpt *s1_hwpt = accel_dev-&gt;s1_hwpt;
+&gt; +    HostIOMMUDeviceIOMMUFD *idev = accel_dev-&gt;idev;
+&gt; +    uint32_t flags = 0;
+&gt; +
+&gt; +    if (!idev || !viommu) {
+&gt; +        return -ENOENT;
+&gt; +    }
+&gt; +
+&gt; +    if (s1_hwpt) {
+&gt; +        smmuv3_accel_dev_uninstall_nested_ste(accel_dev, true);
+&gt; +    }
+&gt; +
+&gt; +    s1_hwpt = g_new0(SMMUS1Hwpt, 1);
+&gt; +    s1_hwpt-&gt;iommufd = idev-&gt;iommufd;
+&gt; +    iommufd_backend_alloc_hwpt(idev-&gt;iommufd, idev-&gt;devid,
+&gt; +                               viommu-&gt;core.viommu_id, flags, data_type,
+&gt; +                               data_len, data, &#38;s1_hwpt-&gt;hwpt_id, &#38;error_abort);
+&gt; +    host_iommu_device_iommufd_attach_hwpt(idev, s1_hwpt-&gt;hwpt_id, &#38;error_abort);
+</span>We don&#39;t want error_abort here in the prospect to support hotplug. Also
+I think you should properly cascade any error through Error handles, at
+least on the install path
+<span
+class="q">&gt; +    accel_dev-&gt;s1_hwpt = s1_hwpt;
+&gt; +    return 0;
+&gt; +}
+&gt; +
+&gt; +void smmuv3_accel_install_nested_ste(SMMUState *bs, SMMUDevice *sdev, int sid)
+</span>return bool and pass Error handle
+<span
+class="q">&gt; +{
+&gt; +    SMMUv3AccelDevice *accel_dev;
+&gt; +    SMMUEventInfo event = {.type = SMMU_EVT_NONE, .sid = sid,
+&gt; +                           .inval_ste_allowed = true};
+&gt; +    struct iommu_hwpt_arm_smmuv3 nested_data = {};
+&gt; +    uint32_t config;
+&gt; +    STE ste;
+&gt; +    int ret;
+&gt; +
+&gt; +    if (!bs-&gt;accel) {
+&gt; +        return;
+&gt; +    }
+&gt; +
+&gt; +    accel_dev = container_of(sdev, SMMUv3AccelDevice, sdev);
+&gt; +    if (!accel_dev-&gt;viommu) {
+&gt; +        return;
+&gt; +    }
+&gt; +
+&gt; +    ret = smmu_find_ste(sdev-&gt;smmu, sid, &#38;ste, &#38;event);
+&gt; +    if (ret) {
+&gt; +        error_report(&#34;failed to find STE for sid 0x%x&#34;, sid);
+&gt; +        return;
+&gt; +    }
+&gt; +
+&gt; +    config = STE_CONFIG(&#38;ste);
+&gt; +    if (!STE_VALID(&#38;ste) || !STE_CFG_S1_ENABLED(config)) {
+&gt; +        smmuv3_accel_dev_uninstall_nested_ste(accel_dev, STE_CFG_ABORT(config));
+&gt; +        smmuv3_flush_config(sdev);
+&gt; +        return;
+&gt; +    }
+&gt; +
+&gt; +    nested_data.ste[0] = (uint64_t)ste.word[0] | (uint64_t)ste.word[1] &lt;&lt; 32;
+&gt; +    nested_data.ste[1] = (uint64_t)ste.word[2] | (uint64_t)ste.word[3] &lt;&lt; 32;
+&gt; +    /* V | CONFIG | S1FMT | S1CTXPTR | S1CDMAX */
+</span>use bitmasks here and below?
+<span
+class="q">&gt; +    nested_data.ste[0] &#38;= 0xf80fffffffffffffULL;
+&gt; +    /* S1DSS | S1CIR | S1COR | S1CSH | S1STALLD | EATS */
+&gt; +    nested_data.ste[1] &#38;= 0x380000ffULL;
+&gt; +    ret = smmuv3_accel_dev_install_nested_ste(accel_dev,
+&gt; +                                              IOMMU_HWPT_DATA_ARM_SMMUV3,
+&gt; +                                              sizeof(nested_data),
+&gt; +                                              &#38;nested_data);
+&gt; +    if (ret) {
+&gt; +        error_report(&#34;Unable to install nested STE=%16LX:%16LX, sid=0x%x,&#34;
+&gt; +                      &#34;ret=%d&#34;, nested_data.ste[1], nested_data.ste[0],
+&gt; +                      sid, ret);
+</span>error_setg everywhere
+<span
+class="q">&gt; +    }
+&gt; +
+&gt; +    trace_smmuv3_accel_install_nested_ste(sid, nested_data.ste[1],
+&gt; +                                          nested_data.ste[0]);
+&gt; +}
+&gt; +
+&gt; +static void
+&gt; +smmuv3_accel_ste_range(gpointer key, gpointer value, gpointer user_data)
+&gt; +{
+&gt; +    SMMUDevice *sdev = (SMMUDevice *)key;
+&gt; +    uint32_t sid = smmu_get_sid(sdev);
+&gt; +    SMMUSIDRange *sid_range = (SMMUSIDRange *)user_data;
+&gt; +
+&gt; +    if (sid &gt;= sid_range-&gt;start &#38;&#38; sid &lt;= sid_range-&gt;end) {
+&gt; +        SMMUv3State *s = sdev-&gt;smmu;
+&gt; +        SMMUState *bs = &#38;s-&gt;smmu_state;
+&gt; +
+&gt; +        smmuv3_accel_install_nested_ste(bs, sdev, sid);
+&gt; +    }
+&gt; +}
+&gt; +
+&gt; +void
+&gt; +smmuv3_accel_install_nested_ste_range(SMMUState *bs, SMMUSIDRange *range)
+&gt; +{
+&gt; +    if (!bs-&gt;accel) {
+&gt; +        return;
+&gt; +    }
+&gt; +
+&gt; +    g_hash_table_foreach(bs-&gt;configs, smmuv3_accel_ste_range, range);
+&gt; +}
+&gt; +
+&gt;  static SMMUv3AccelDevice *smmuv3_accel_get_dev(SMMUState *bs, SMMUPciBus *sbus,
+&gt;                                                  PCIBus *bus, int devfn)
+&gt;  {
+&gt; diff --git a/hw/arm/smmuv3-accel.h b/hw/arm/smmuv3-accel.h
+&gt; index 55a6a353fc..06e81b630d 100644
+&gt; --- a/hw/arm/smmuv3-accel.h
+&gt; +++ b/hw/arm/smmuv3-accel.h
+&gt; @@ -29,10 +29,16 @@ typedef struct SMMUViommu {
+&gt;      QLIST_HEAD(, SMMUv3AccelDevice) device_list;
+&gt;  } SMMUViommu;
+&gt;  
+&gt; +typedef struct SMMUS1Hwpt {
+&gt; +    IOMMUFDBackend *iommufd;
+&gt; +    uint32_t hwpt_id;
+&gt; +} SMMUS1Hwpt;
+&gt; +
+&gt;  typedef struct SMMUv3AccelDevice {
+&gt;      SMMUDevice  sdev;
+&gt;      AddressSpace as_sysmem;
+&gt;      HostIOMMUDeviceIOMMUFD *idev;
+&gt; +    SMMUS1Hwpt  *s1_hwpt;
+&gt;      SMMUViommu *viommu;
+&gt;      QLIST_ENTRY(SMMUv3AccelDevice) next;
+&gt;  } SMMUv3AccelDevice;
+&gt; @@ -45,10 +51,21 @@ typedef struct SMMUv3AccelState {
+&gt;  
+&gt;  #if defined(CONFIG_ARM_SMMUV3) &#38;&#38; defined(CONFIG_IOMMUFD)
+&gt;  void smmuv3_accel_init(SMMUv3State *s);
+&gt; +void smmuv3_accel_install_nested_ste(SMMUState *bs, SMMUDevice *sdev, int sid);
+&gt; +void smmuv3_accel_install_nested_ste_range(SMMUState *bs,
+&gt; +                                           SMMUSIDRange *range);
+</span>to me should return an int or bool and convey Error handle
+<span
+class="q">&gt;  #else
+&gt;  static inline void smmuv3_accel_init(SMMUv3State *d)
+&gt;  {
+&gt;  }
+&gt; +static inline void
+&gt; +smmuv3_accel_install_nested_ste(SMMUState *bs, SMMUDevice *sdev, int sid)
+&gt; +{
+&gt; +}
+&gt; +static inline void
+&gt; +smmuv3_accel_install_nested_ste_range(SMMUState *bs, SMMUSIDRange *range)
+&gt; +{
+&gt; +}
+&gt;  #endif
+&gt;  
+&gt;  #endif /* HW_ARM_SMMUV3_ACCEL_H */
+&gt; diff --git a/hw/arm/smmuv3-internal.h b/hw/arm/smmuv3-internal.h
+&gt; index b6b7399347..738061c6ad 100644
+&gt; --- a/hw/arm/smmuv3-internal.h
+&gt; +++ b/hw/arm/smmuv3-internal.h
+&gt; @@ -547,6 +547,10 @@ typedef struct CD {
+&gt;      uint32_t word[16];
+&gt;  } CD;
+&gt;  
+&gt; +int smmu_find_ste(SMMUv3State *s, uint32_t sid, STE *ste,
+&gt; +                  SMMUEventInfo *event);
+&gt; +void smmuv3_flush_config(SMMUDevice *sdev);
+&gt; +
+&gt;  /* STE fields */
+&gt;  
+&gt;  #define STE_VALID(x)   extract32((x)-&gt;word[0], 0, 1)
+&gt; diff --git a/hw/arm/smmuv3.c b/hw/arm/smmuv3.c
+&gt; index 2f5a8157dd..c94bfe6564 100644
+&gt; --- a/hw/arm/smmuv3.c
+&gt; +++ b/hw/arm/smmuv3.c
+&gt; @@ -630,8 +630,8 @@ bad_ste:
+&gt;   * Supports linear and 2-level stream table
+&gt;   * Return 0 on success, -EINVAL otherwise
+&gt;   */
+&gt; -static int smmu_find_ste(SMMUv3State *s, uint32_t sid, STE *ste,
+&gt; -                         SMMUEventInfo *event)
+&gt; +int smmu_find_ste(SMMUv3State *s, uint32_t sid, STE *ste,
+&gt; +                  SMMUEventInfo *event)
+&gt;  {
+&gt;      dma_addr_t addr, strtab_base;
+&gt;      uint32_t log2size;
+&gt; @@ -900,7 +900,7 @@ static SMMUTransCfg *smmuv3_get_config(SMMUDevice *sdev, SMMUEventInfo *event)
+&gt;      return cfg;
+&gt;  }
+&gt;  
+&gt; -static void smmuv3_flush_config(SMMUDevice *sdev)
+&gt; +void smmuv3_flush_config(SMMUDevice *sdev)
+&gt;  {
+&gt;      SMMUv3State *s = sdev-&gt;smmu;
+&gt;      SMMUState *bc = &#38;s-&gt;smmu_state;
+&gt; @@ -1342,6 +1342,7 @@ static int smmuv3_cmdq_consume(SMMUv3State *s)
+&gt;  
+&gt;              trace_smmuv3_cmdq_cfgi_ste(sid);
+&gt;              smmuv3_flush_config(sdev);
+&gt; +            smmuv3_accel_install_nested_ste(bs, sdev, sid);
+&gt;  
+&gt;              break;
+&gt;          }
+&gt; @@ -1361,6 +1362,7 @@ static int smmuv3_cmdq_consume(SMMUv3State *s)
+&gt;              sid_range.end = sid_range.start + mask;
+&gt;  
+&gt;              trace_smmuv3_cmdq_cfgi_ste_range(sid_range.start, sid_range.end);
+&gt; +            smmuv3_accel_install_nested_ste_range(bs, &#38;sid_range);
+&gt;              smmu_configs_inv_sid_range(bs, sid_range);
+&gt;              break;
+&gt;          }
+&gt; diff --git a/hw/arm/trace-events b/hw/arm/trace-events
+&gt; index c4537ca1d6..7d232ca17c 100644
+&gt; --- a/hw/arm/trace-events
+&gt; +++ b/hw/arm/trace-events
+&gt; @@ -69,6 +69,7 @@ smmu_reset_exit(void) &#34;&#34;
+&gt;  #smmuv3-accel.c
+&gt;  smmuv3_accel_set_iommu_device(int devfn, uint32_t sid) &#34;devfn=0x%x (sid=0x%x)&#34;
+&gt;  smmuv3_accel_unset_iommu_device(int devfn, uint32_t sid) &#34;devfn=0x%x (sid=0x%x&#34;
+&gt; +smmuv3_accel_install_nested_ste(uint32_t sid, uint64_t ste_1, uint64_t ste_0) &#34;sid=%d ste=%&#34;PRIx64&#34;:%&#34;PRIx64
+&gt;  
+&gt;  # strongarm.c
+&gt;  strongarm_uart_update_parameters(const char *label, int speed, char parity, int data_bits, int stop_bits) &#34;%s speed=%d parity=%c data=%d stop=%d&#34;
+</span>Thanks
+
+Eric
+
+
+</pre></div></content></entry><entry><author><name>Vegard Nossum</name><email>vegard.nossum@oracle.com</email></author><title>Re: [PATCH v2] kconfig: Add transitional symbol attribute for migration support</title><updated>2025-09-05T09:41:49Z</updated><link
+href="https://lore.kernel.org/all/2bf12be7-7fd5-41e2-a0a2-da82903d0ccd@oracle.com/"/><id>urn:uuid:6a1ec87f-334a-f858-d4a0-4c70abea89e2</id><thr:in-reply-to
+ref="urn:uuid:7eac6a6c-9db8-4f4b-6f4c-ae00424f41ac"
+href="https://lore.kernel.org/all/18c2c59e-edae-4281-ac7c-8524d9cde1c5@oracle.com/"/><content
+type="xhtml"><div
+xmlns="http://www.w3.org/1999/xhtml"><pre
+style="white-space:pre-wrap">
+On 04/09/2025 19:10, Vegard Nossum wrote:
+<span
+class="q">&gt; On 04/09/2025 19:03, Vegard Nossum wrote:
+&gt;&gt; @@ -214,6 +214,11 @@ static void sym_calc_visibility(struct symbol *sym)
+&gt;&gt; &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; struct property *prop;
+&gt;&gt; &#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; tristate tri;
+&gt;&gt;
+&gt;&gt; +&#160;&#160;&#160;&#160;&#160;&#160; if (sym-&gt;flags &#38; SYMBOL_HIDDEN) {
+&gt;&gt; +&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; sym-&gt;visible = yes;
+&gt; 
+&gt; ...I just saw the irony here after having already pressed &#34;Send&#34;.
+&gt; 
+&gt; Let me explain:
+&gt; 
+&gt; SYMBOL_HIDDEN is your new flag that indicates that somebody used
+&gt; &#34;transitional&#34; on the config entry.
+&gt; 
+&gt; sym-&gt;visible is tristate value that gives you the condition for whether
+&gt; a symbol can take on a value -- y/m means the option is visible to the
+&gt; user (hence the name) and thus eligible to have a value assigned to it.
+</span>
+Another small clarification: Replace &#34;is visible to the user&#34; by &#34;can be
+set by .config&#34;.
+
+Actual user visibility is controlled by menu_is_visible(), not
+sym-&gt;visible, so my patch still doesn&#39;t show transitional symbols to the
+user in menuconfig. AFAICT, menu_is_visible() is completely independent
+of sym-&gt;visible.
+
+I tested menuconfig/mconf and oldconfig/conf --oldconfig with scripts/
+kconfig/tests/transitional/Kconfig and my patch and it looks correct
+(only the new options are displayed).
+
+
+Vegard
+</pre></div></content></entry><entry><author><name>nicolas.ferre</name><email>nicolas.ferre@microchip.com</email></author><title>[PATCH 2/2] ARM: debug: at91: add sama7d65 debug uarts for DEBUG_LL</title><updated>2025-09-05T09:41:46Z</updated><link
+href="https://lore.kernel.org/all/20250905094113.27480-2-nicolas.ferre@microchip.com/"/><id>urn:uuid:b831f89b-475e-0075-1ec6-a1747c031c53</id><thr:in-reply-to
+ref="urn:uuid:5a37ac05-4c81-20e6-3327-58cb013b463c"
+href="https://lore.kernel.org/all/20250905094113.27480-1-nicolas.ferre@microchip.com/"/><content
+type="xhtml"><div
+xmlns="http://www.w3.org/1999/xhtml"><pre
+style="white-space:pre-wrap">From: Nicolas Ferre &lt;nicolas.ferre@microchip.com&gt;
+
+Add USART6 on Flexcom6 for AT91 DEBUG_LL with associated physical and
+virtual addresses. It&#39;s the debug console on SAMA765 Curiosity board.
+Add the possibility to use USART3 as well because it&#39;s the debug console
+on some other SAMA7D65 boards.
+
+Signed-off-by: Nicolas Ferre &lt;nicolas.ferre@microchip.com&gt;
+Reviewed-by: Ryan Wanner &lt;ryan.wanner@microchip.com&gt;
+---
+ arch/arm/Kconfig.debug | 20 ++++++++++++++++++++
+ 1 file <a href="https://lore.kernel.org/all/20250905094113.27480-2-nicolas.ferre@microchip.com/#related">changed</a>, 20 insertions(+)
+
+<span
+class="head">diff --git a/arch/arm/Kconfig.debug b/arch/arm/Kconfig.debug
+index c941adbc850b..1f4c473b81ac 100644
+--- a/arch/arm/Kconfig.debug
++++ b/arch/arm/Kconfig.debug
+</span><span
+class="hunk">@@ -207,6 +207,22 @@ choice
+</span> 		  their output to the USART1 port on SAMV7 based
+ 		  machines.
+ 
+<span
+class="add">+	config DEBUG_AT91_SAMA7D65_FLEXCOM3
++		bool &#34;Kernel low-level debugging on SAMA7D65 FLEXCOM3&#34;
++		select DEBUG_AT91_UART
++		depends on SOC_SAMA7D65
++		help
++		  Say Y here if you want kernel low-level debugging support
++		  on the FLEXCOM3 port IOSET 1 of SAMA7D65.
++
++	config DEBUG_AT91_SAMA7D65_FLEXCOM6
++		bool &#34;Kernel low-level debugging on SAMA7D65 FLEXCOM6&#34;
++		select DEBUG_AT91_UART
++		depends on SOC_SAMA7D65
++		help
++		  Say Y here if you want kernel low-level debugging support
++		  on the FLEXCOM6 port IOSET 4 of SAMA7D65.
++
+</span> 	config DEBUG_AT91_SAMA7G5_FLEXCOM3
+ 		bool &#34;Kernel low-level debugging on SAMA7G5 FLEXCOM3&#34;
+ 		select DEBUG_AT91_UART
+<span
+class="hunk">@@ -1627,6 +1643,8 @@ config DEBUG_UART_PHYS
+</span> 	default 0xd4018000 if DEBUG_MMP_UART3
+ 	default 0xe0000000 if DEBUG_SPEAR13XX
+ 	default 0xe0064200 if DEBUG_AT91_LAN966_FLEXCOM
+<span
+class="add">+	default 0xe182c200 if DEBUG_AT91_SAMA7D65_FLEXCOM3
++	default 0xe2020200 if DEBUG_AT91_SAMA7D65_FLEXCOM6
+</span> 	default 0xe1824200 if DEBUG_AT91_SAMA7G5_FLEXCOM3
+ 	default 0xe4007000 if DEBUG_HIP04_UART
+ 	default 0xe6c40000 if DEBUG_RMOBILE_SCIFA0
+<span
+class="hunk">@@ -1690,6 +1708,8 @@ config DEBUG_UART_VIRT
+</span> 	default 0xc8821000 if DEBUG_RV1108_UART1
+ 	default 0xc8912000 if DEBUG_RV1108_UART0
+ 	default 0xe0010fe0 if ARCH_RPC
+<span
+class="add">+	default 0xfc82c200 if DEBUG_AT91_SAMA7D65_FLEXCOM3
++	default 0xfd020200 if DEBUG_AT91_SAMA7D65_FLEXCOM6
+</span> 	default 0xe0824200 if DEBUG_AT91_SAMA7G5_FLEXCOM3
+ 	default 0xf0010000 if DEBUG_ASM9260_UART
+ 	default 0xf0100000 if DEBUG_DIGICOLOR_UA0
+-- 
+2.43.0
+
+</pre></div></content></entry><entry><author><name>Florian Weimer</name><email>fweimer@redhat.com</email></author><title>Re: [PATCH v3] uapi/linux/fcntl: remove AT_RENAME* macros</title><updated>2025-09-05T09:41:44Z</updated><link
+href="https://lore.kernel.org/all/lhutt1htewo.fsf@oldenburg.str.redhat.com/"/><id>urn:uuid:97cfe2eb-5031-4896-60e9-a745cc1170fd</id><thr:in-reply-to
+ref="urn:uuid:bc9b418f-b5e1-e5c2-00a4-f4e65156e275"
+href="https://lore.kernel.org/all/CAOQ4uxjcLDUcfdp72cpQcDQEtZaaR4G+P8oPXL_HbotFirGrKQ@mail.gmail.com/"/><content
+type="xhtml"><div
+xmlns="http://www.w3.org/1999/xhtml"><pre
+style="white-space:pre-wrap">* Amir Goldstein:
+
+<span
+class="q">&gt;&gt; If it&#39;s too much effort to synchronise them between glibc then it&#39;s
+&gt;&gt; better to just close the book on this whole chapter (even though my
+&gt;&gt; impression is that glibc made a mistake or two when adding the
+&gt;&gt; definitions).
+&gt;
+&gt; Considering that glibc has this fix lined up:
+&gt; <a
+href="https://inbox.sourceware.org/libc-alpha/lhubjnpv03o.fsf@oldenburg.str.redhat.com/">https://inbox.sourceware.org/libc-alpha/lhubjnpv03o.fsf@oldenburg.str.redhat.com/</a>
+&gt;
+&gt; Do we need to do anything at all?
+&gt;
+&gt; Florian,
+&gt;
+&gt; I am not that familiar with packaging and distributions of glibc
+&gt; headers and kernel headers to downstream users.
+</span>
+I don&#39;t think kernel changes are necessary or desirable at this point.
+The glibc change went into glibc 2.42 only, and at this point in time,
+all distributions shipping 2.42 (few of them do) are pretty much
+guaranteed to pick up fixes from the 2.42 stable release branch
+regularly.  So if we get this into glibc 2.43 and backport it to 2.42,
+the problem should disappear quite soon from a developer&#39;s perspective.
+
+Thanks,
+Florian
+
+</pre></div></content></entry><entry><author><name>Christian K&#246;nig</name><email>christian.koenig@amd.com</email></author><title>Re: [PATCH v2] drm/amdgpu: fix memleak of ring sched and fence driver</title><updated>2025-09-05T09:41:44Z</updated><link
+href="https://lore.kernel.org/all/9a121c6f-ecb2-4c5a-9ebf-09cc33263126@amd.com/"/><id>urn:uuid:92c8c31f-a99e-3177-6827-801e0931cab1</id><thr:in-reply-to
+ref="urn:uuid:618a43db-4751-465c-abe0-cc77939a509e"
+href="https://lore.kernel.org/all/20250905023432.929822-1-lincao12@amd.com/"/><content
+type="xhtml"><div
+xmlns="http://www.w3.org/1999/xhtml"><pre
+style="white-space:pre-wrap">Alex already send exactly that patch yesterday.
+
+Please review that one instead.
+
+Thanks,
+Christian.
+
+On 05.09.25 04:34, Lin.Cao wrote:
+<span
+class="q">&gt; commit 4220d2c7c41b (&#34;drm/amdgpu: remove is_mes_queue flag&#34;) set
+&gt; ring-&gt;adev-&gt;ring[ring-idx] as NULL at the end of function amdgpu_ring_fini()
+&gt; which will cause function amdgpu_fence_driver_sw_fini() skip
+&gt; drm_sched_fini() and free fence_drv.fence then cause memory leak.
+&gt; 
+&gt; Remove set rings[ring-&gt;idx] as NULL to fix this issue
+&gt; 
+&gt; Fixes: 4220d2c7c41b (&#34;drm/amdgpu: remove is_mes_queue flag&#34;)
+&gt; Signed-off-by: Lin.Cao &lt;lincao12@amd.com&gt;
+&gt; ---
+&gt;  drivers/gpu/drm/amd/amdgpu/amdgpu_ring.c | 2 --
+&gt;  1 file changed, 2 deletions(-)
+&gt; 
+&gt; diff --git a/drivers/gpu/drm/amd/amdgpu/amdgpu_ring.c b/drivers/gpu/drm/amd/amdgpu/amdgpu_ring.c
+&gt; index 6379bb25bf5c..486c3646710c 100644
+&gt; --- a/drivers/gpu/drm/amd/amdgpu/amdgpu_ring.c
+&gt; +++ b/drivers/gpu/drm/amd/amdgpu/amdgpu_ring.c
+&gt; @@ -421,8 +421,6 @@ void amdgpu_ring_fini(struct amdgpu_ring *ring)
+&gt;  	dma_fence_put(ring-&gt;vmid_wait);
+&gt;  	ring-&gt;vmid_wait = NULL;
+&gt;  	ring-&gt;me = 0;
+&gt; -
+&gt; -	ring-&gt;adev-&gt;rings[ring-&gt;idx] = NULL;
+&gt;  }
+&gt;  
+&gt;  /**
+</span>
+</pre></div></content></entry><entry><author><name>nicolas.ferre</name><email>nicolas.ferre@microchip.com</email></author><title>[PATCH 1/2] ARM: debug: at91: add UART0 for sama5d2 DEBUG_LL</title><updated>2025-09-05T09:41:44Z</updated><link
+href="https://lore.kernel.org/all/20250905094113.27480-1-nicolas.ferre@microchip.com/"/><id>urn:uuid:5a37ac05-4c81-20e6-3327-58cb013b463c</id><content
+type="xhtml"><div
+xmlns="http://www.w3.org/1999/xhtml"><pre
+style="white-space:pre-wrap">From: Nicolas Ferre &lt;nicolas.ferre@microchip.com&gt;
+
+Add the UART0 that is by default console on some boards
+like the SAMA5D29-Curiosity.
+
+Signed-off-by: Nicolas Ferre &lt;nicolas.ferre@microchip.com&gt;
+---
+ arch/arm/Kconfig.debug | 10 ++++++++++
+ 1 file <a href="https://lore.kernel.org/all/20250905094113.27480-1-nicolas.ferre@microchip.com/#related">changed</a>, 10 insertions(+)
+
+<span
+class="head">diff --git a/arch/arm/Kconfig.debug b/arch/arm/Kconfig.debug
+index 366f162e147d..c941adbc850b 100644
+--- a/arch/arm/Kconfig.debug
++++ b/arch/arm/Kconfig.debug
+</span><span
+class="hunk">@@ -174,6 +174,14 @@ choice
+</span> 		    at91sam9263, at91sam9g45, at91sam9m10,
+ 		    sama5d3
+ 
+<span
+class="add">+	config DEBUG_AT91_SAMA5D2_UART0
++		bool &#34;Kernel low-level debugging on SAMA5D2 UART0&#34;
++		select DEBUG_AT91_UART
++		depends on SOC_SAMA5D2
++		help
++		  Say Y here if you want kernel low-level debugging support
++		  on the UART0 port of sama5d2.
++
+</span> 	config DEBUG_AT91_SAMA5D2_UART1
+ 		bool &#34;Kernel low-level debugging on SAMA5D2 UART1&#34;
+ 		select DEBUG_AT91_UART
+<span
+class="hunk">@@ -1635,6 +1643,7 @@ config DEBUG_UART_PHYS
+</span> 	default 0xf1012000 if DEBUG_MVEBU_UART0_ALTERNATE
+ 	default 0xf1012100 if DEBUG_MVEBU_UART1_ALTERNATE
+ 	default 0xf7fc9000 if DEBUG_BERLIN_UART
+<span
+class="add">+	default 0xf801c000 if DEBUG_AT91_SAMA5D2_UART0
+</span> 	default 0xf8020000 if DEBUG_AT91_SAMA5D2_UART1
+ 	default 0xf8b00000 if DEBUG_HIX5HD2_UART
+ 	default 0xf991e000 if DEBUG_QCOM_UARTDM
+<span
+class="hunk">@@ -1707,6 +1716,7 @@ config DEBUG_UART_VIRT
+</span> 	default 0xf7000400 if DEBUG_S3C64XX_UART &#38;&#38; DEBUG_S3C_UART1
+ 	default 0xf7000800 if DEBUG_S3C64XX_UART &#38;&#38; DEBUG_S3C_UART2
+ 	default 0xf7000c00 if DEBUG_S3C64XX_UART &#38;&#38; DEBUG_S3C_UART3
+<span
+class="add">+	default 0xf701c000 if DEBUG_AT91_SAMA5D2_UART0
+</span> 	default 0xf7020000 if DEBUG_AT91_SAMA5D2_UART1
+ 	default 0xf7fc9000 if DEBUG_BERLIN_UART
+ 	default 0xf8007000 if DEBUG_HIP04_UART
+-- 
+2.43.0
+
+</pre></div></content></entry><entry><author><name>Oliver Upton</name><email>oliver.upton@linux.dev</email></author><title>Re: [PATCH] KVM: arm64: nested: fix VNCR TLB ASID match logic for non-Global entries</title><updated>2025-09-05T09:41:33Z</updated><link
+href="https://lore.kernel.org/all/175706523473.1669883.17269564627952159753.b4-ty@linux.dev/"/><id>urn:uuid:defb5ec6-19ef-dadc-85c9-751980f958ac</id><thr:in-reply-to
+ref="urn:uuid:cd76d56d-01ef-1406-6b33-43b404564efa"
+href="https://lore.kernel.org/all/20250903150421.90752-1-w1nsom3gna@korea.ac.kr/"/><content
+type="xhtml"><div
+xmlns="http://www.w3.org/1999/xhtml"><pre
+style="white-space:pre-wrap">On Thu, 04 Sep 2025 00:04:21 +0900, Geonha Lee wrote:
+<span
+class="q">&gt; kvm_vncr_tlb_lookup() is supposed to return true when the cached VNCR
+&gt; TLB entry is valid for the current context. For non-Global entries, that
+&gt; means the entry&#8217;s ASID must match the current ASID.
+&gt; 
+&gt; The current code returns true when the ASIDs do *not* match, which
+&gt; inverts the logic. This is a potential vulnerability:
+&gt; 
+&gt; [...]
+</span>
+Applied to fixes, thanks!
+
+[1/1] KVM: arm64: nested: fix VNCR TLB ASID match logic for non-Global entries
+      <a
+href="https://git.kernel.org/kvmarm/kvmarm/c/06f66db9bda4">https://git.kernel.org/kvmarm/kvmarm/c/06f66db9bda4</a>
+
+--
+Best,
+Oliver
+</pre></div></content></entry><entry><author><name>Oliver Upton</name><email>oliver.upton@linux.dev</email></author><title>Re: [PATCH] KVM: arm64: Only free fully unmapped tables in stage2_free_walker()</title><updated>2025-09-05T09:41:30Z</updated><link
+href="https://lore.kernel.org/all/175706523467.1669883.16451846246676541664.b4-ty@linux.dev/"/><id>urn:uuid:dea8cd3c-5c44-c9cf-62cc-a8031c7f750d</id><thr:in-reply-to
+ref="urn:uuid:9f95764d-76c5-f69a-d0e2-57963b38e218"
+href="https://lore.kernel.org/all/20250904101746.275795-1-oliver.upton@linux.dev/"/><content
+type="xhtml"><div
+xmlns="http://www.w3.org/1999/xhtml"><pre
+style="white-space:pre-wrap">On Thu, 04 Sep 2025 03:17:46 -0700, Oliver Upton wrote:
+<span
+class="q">&gt; syzkaller caught a terminal use-after-free in the free walker resulting
+&gt; from a premature put_page() on a partially unmapped page table.
+&gt; Previously KVM performed a single walk covering the entire IPA space,
+&gt; but now that the range of the walk is up to KVM_PGTABLE_MIN_BLOCK_LEVEL
+&gt; worth of memory it is possibly to only partially free a table.
+&gt; 
+&gt; Fix it by only dropping the table reference if the page count of the
+&gt; table is 1 (i.e. no longer contains valid PTEs).
+&gt; 
+&gt; [...]
+</span>
+Applied to fixes, thanks!
+
+[1/1] KVM: arm64: Only free fully unmapped tables in stage2_free_walker()
+      <a
+href="https://git.kernel.org/kvmarm/kvmarm/c/3095864771d8">https://git.kernel.org/kvmarm/kvmarm/c/3095864771d8</a>
+
+--
+Best,
+Oliver
+</pre></div></content></entry></feed>
