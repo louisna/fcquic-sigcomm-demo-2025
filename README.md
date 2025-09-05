@@ -12,6 +12,8 @@ For people who whish to connect to the Flexicast QUIC source for either use case
 
 We provide Docker images and environment variables to automate deployment and connection with our source.
 
+__DISCLAMER__: On Windows/macOS, Docker containers are run within a virtual machine. It is thus impossible to connect to the local network of the host through the container, which is required to receive multicast packets... As such, I think the only way to still participate to the demo if you have a Window/macOS computer is to compile from source the binaries. I assure you, this is not big, because it's Rust. And you should have a valid Rust installation. I mean, Rust is nice, so you should work with Rust. So it's not a big deal, is it?
+
 ## Hosting your own Flexicast QUIC source
 
 We provide [an open-source extension of Flexicast QUIC based on Cloudflare quiche](https://github.com/IPNetworkingLab/flexicast-quic), which is based on our paper [Taking the Best of Multicast and Unicast with Flexicast QUIC](https://louisna.github.io/publication/2025-ccr-flexicast).

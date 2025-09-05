@@ -1,3 +1,3 @@
 #!/bin/bash
 
-GST_DEBUG="fpsdisplaysink:5" gst-launch-1.0 -e -v udpsrc port=22222 ! application/x-rtp,payload=96,media="video",encoding-name="H264",clock-rate="90000" ! rtpjitterbuffer drop-on-latency=true latency=1 ! rtph264depay ! tee name=t t. ! queue ! h264parse ! avimux ! filesink location=out.avi t. ! queue ! h264parse ! fpsdisplaysink video-sink=fakesink sync=true text-overlay=false &> /shared/gst_file.log
+GST_DEBUG="fpsdisplaysink:5" gst-launch-1.0 -e -v udpsrc port=22222 ! application/x-rtp,payload=96,media="video",encoding-name="H264",clock-rate="90000" ! rtpjitterbuffer drop-on-latency=true latency=1 ! rtph264depay ! tee name=t t. ! queue ! h264parse ! avimux ! filesink location=/shared/out.avi t. ! queue ! h264parse ! fpsdisplaysink video-sink=fakesink sync=true text-overlay=false &> /shared/gst_file.log
